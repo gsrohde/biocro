@@ -75,53 +75,59 @@
  * conversion factor of `24 hours per day` is required in the code as compared to the
  * formulas presented above.
  */
-class thermal_time_bilinear : public DerivModule
+class thermal_time_bilinear : public differential_module
 {
    public:
     thermal_time_bilinear(
-        state_map const* input_parameters,
-        state_map* output_parameters)
+        state_map const& input_quantities,
+        state_map* output_quantities)
         :  // Define basic module properties by passing its name to its parent class
-          DerivModule("thermal_time_bilinear"),
+          differential_module("thermal_time_bilinear"),
 
-          // Get pointers to input parameters
-          temp(get_input(input_parameters, "temp")),
-          tbase(get_input(input_parameters, "tbase")),
-          topt(get_input(input_parameters, "topt")),
-          tmax(get_input(input_parameters, "tmax")),
+          // Get references to input quantities
+          time{get_input(input_quantities, "time")},
+          sowing_time{get_input(input_quantities, "sowing_time")},
+          temp(get_input(input_quantities, "temp")),
+          tbase(get_input(input_quantities, "tbase")),
+          topt(get_input(input_quantities, "topt")),
+          tmax(get_input(input_quantities, "tmax")),
 
-          // Get pointers to output parameters
-          TTc_op(get_op(output_parameters, "TTc"))
+          // Get pointers to output quantities
+          TTc_op(get_op(output_quantities, "TTc"))
     {
     }
-    static std::vector<std::string> get_inputs();
-    static std::vector<std::string> get_outputs();
+    static string_vector get_inputs();
+    static string_vector get_outputs();
 
    private:
-    // References to input parameters
+    // References to input quantities
+    double const& time;
+    double const& sowing_time;
     double const& temp;
     double const& tbase;
     double const& topt;
     double const& tmax;
 
-    // Pointers to output parameters
+    // Pointers to output quantities
     double* TTc_op;
 
     // Main operation
     void do_operation() const;
 };
 
-std::vector<std::string> thermal_time_bilinear::get_inputs()
+string_vector thermal_time_bilinear::get_inputs()
 {
     return {
-        "temp",   // degrees C
-        "tbase",  // degrees C
-        "topt",   // degrees C
-        "tmax"    // degrees C
+        "time",         // days
+        "sowing_time",  // days
+        "temp",         // degrees C
+        "tbase",        // degrees C
+        "topt",         // degrees C
+        "tmax"          // degrees C
     };
 }
 
-std::vector<std::string> thermal_time_bilinear::get_outputs()
+string_vector thermal_time_bilinear::get_outputs()
 {
     return {
         "TTc"  // degrees C * day / hr
@@ -131,15 +137,16 @@ std::vector<std::string> thermal_time_bilinear::get_outputs()
 void thermal_time_bilinear::do_operation() const
 {
     // Find the rate of change on a daily basis
-    double const rate_per_day = temp <= tbase ? 0.0
-                              : temp <= topt  ? temp - tbase
-                              : temp <= tmax  ? (tmax - temp) * (topt - tbase) / (tmax - topt)
-                              :                 0.0;  // degrees C
+    double const rate_per_day = time < sowing_time ? 0.0
+                                : temp <= tbase    ? 0.0
+                                : temp <= topt     ? temp - tbase
+                                : temp <= tmax     ? (tmax - temp) * (topt - tbase) / (tmax - topt)
+                                                   : 0.0;  // degrees C
 
     // Convert to an hourly rate
     double const rate_per_hour = rate_per_day / 24.0;  // degrees C * day / hr
 
-    // Update the output parameter list
+    // Update the output quantity list
     update(TTc_op, rate_per_hour);
 }
 

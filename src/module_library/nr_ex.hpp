@@ -2,6 +2,7 @@
 #define NR_EX_H
 
 #include "../modules.h"
+#include "../state_map.h"
 
 // This module is an example in Chapter 16 of Numerical Recipes in C
 // The analytical solution is:
@@ -9,37 +10,37 @@
 //  v = -exp(-x) + exp(-1000x)
 // For u(0) = 1, v(0) = 0
 
-class nr_ex : public DerivModule {
+class nr_ex : public differential_module {
 	public:
-		nr_ex(const std::unordered_map<std::string, double>* input_parameters, std::unordered_map<std::string, double>* output_parameters) : 
-			DerivModule("nr_ex"),
+		nr_ex(state_map const& input_quantities, state_map* output_quantities) :
+			differential_module("nr_ex"),
 			// Get input pointers
-			u_ip(get_ip(input_parameters, "u")),
-			v_ip(get_ip(input_parameters, "v")),
+			u_ip(get_ip(input_quantities, "u")),
+			v_ip(get_ip(input_quantities, "v")),
 			// Get output pointers for time derivatives
-			u_op(get_op(output_parameters, "u")),
-			v_op(get_op(output_parameters, "v"))
+			u_op(get_op(output_quantities, "u")),
+			v_op(get_op(output_quantities, "v"))
 		{}
-		static std::vector<std::string> get_inputs();
-		static std::vector<std::string> get_outputs();
+		static string_vector get_inputs();
+		static string_vector get_outputs();
 	private:
 		// Input pointers
 		const double* u_ip;
 		const double* v_ip;
-		
+
 		// Output pointers for time derivatives
 		double* u_op;
 		double* v_op;
-		
+
 		// Main operation
 		void do_operation() const;
 };
 
-std::vector<std::string> nr_ex::get_inputs() {
+string_vector nr_ex::get_inputs() {
 	return {"u", "v"};
 }
 
-std::vector<std::string> nr_ex::get_outputs() {
+string_vector nr_ex::get_outputs() {
 	return {"u", "v"};
 }
 

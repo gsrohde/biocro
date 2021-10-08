@@ -12,11 +12,11 @@ The Gro() function accepts initial values, parameters, climate variables, and a 
 library(BioCro)
 library(lattice)
 
-result = Gro(sorghum_initial_state, sorghum_parameters, get_growing_season_climate(weather05), sorghum_modules)
+result = run_biocro(soybean_initial_values, soybean_parameters, get_growing_season_climate(soybean_weather2005), soybean_direct_modules, soybean_differential_modules, soybean_ode_solver)
 xyplot(Stem + Leaf ~ TTc, result, type='l')
 ```
 
-There are parameters and modules for miscanthus (_Miscanthus_ x _giganteus_), sorghum (_Sorghum bicolor_) and willow (_Saliceae salix_).
+There are parameters and modules for miscanthus (_Miscanthus_ x _giganteus_), soybean (_Glycine max_) and willow (_Saliceae salix_).
 
 
 ### Installation
@@ -46,9 +46,18 @@ install.packages('biocro', repos=NULL, type='SOURCE')
 ### Making contributions
 Please see the [contribution guidelines](documentation/contribution_guidelines.md) before submitting changes.
 
-### Software Documentation
-- [C++ library](https://ebimodeling.github.io/biocro-documentation/)
-- R package (coming soon!)
+#### Installation steps
+Download the BioCro source code from GitHub, unzip the file, and install from the either the command line or from within R using one of the following sets of commands.
+
+Do one of the sets of instruction below. These assume that the source files are in a directory named "biocro".
+
+See the [BioCro Documentation Web
+Site](https://ebimodeling.github.io/biocro-documentation/).  There
+will be found not only the standard package documentation, but also
+documentation of the C++ code, including notes on the biological
+models used in BioCro and their implementation.  Also included is
+documentation for BioCro package developers and maintainers.
+
 
 ## References
 - [Humphries S and Long SP][Humphries and Long, 1995] (1995) WIMOVAC - a software package for modeling the dynamics of the plant leaf and canopy photosynthesis. Computer Applications in the Bioscience 11(4):361-371.

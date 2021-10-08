@@ -2,126 +2,131 @@
 #define C4_CANOPY_H
 
 #include "../modules.h"
+#include "../state_map.h"
 #include "AuxBioCro.h"  // For nitroParms and Can_Str
 #include "BioCro.h"     // For CanAC
 
-class c4_canopy : public SteadyModule
+class c4_canopy : public direct_module
 {
    public:
     c4_canopy(
-        const std::unordered_map<std::string, double>* input_parameters,
-        std::unordered_map<std::string, double>* output_parameters)
+        state_map const& input_quantities,
+        state_map* output_quantities)
         :  // Define basic module properties by passing its name to its parent class
-          SteadyModule("c4_canopy"),
+          direct_module("c4_canopy"),
 
-          // Get pointers to input parameters
-          nileafn_ip(get_ip(input_parameters, "nileafn")),
-          nkln_ip(get_ip(input_parameters, "nkln")),
-          nvmaxb1_ip(get_ip(input_parameters, "nvmaxb1")),
-          nvmaxb0_ip(get_ip(input_parameters, "nvmaxb0")),
-          nalphab1_ip(get_ip(input_parameters, "nalphab1")),
-          nalphab0_ip(get_ip(input_parameters, "nalphab0")),
-          nRdb1_ip(get_ip(input_parameters, "nRdb1")),
-          nRdb0_ip(get_ip(input_parameters, "nRdb0")),
-          nkpLN_ip(get_ip(input_parameters, "nkpLN")),
-          nlnb0_ip(get_ip(input_parameters, "nlnb0")),
-          nlnb1_ip(get_ip(input_parameters, "nlnb1")),
-          lai_ip(get_ip(input_parameters, "lai")),
-          time_ip(get_ip(input_parameters, "time")),
-          solar_ip(get_ip(input_parameters, "solar")),
-          temp_ip(get_ip(input_parameters, "temp")),
-          rh_ip(get_ip(input_parameters, "rh")),
-          windspeed_ip(get_ip(input_parameters, "windspeed")),
-          lat_ip(get_ip(input_parameters, "lat")),
-          nlayers_ip(get_ip(input_parameters, "nlayers")),
-          vmax1_ip(get_ip(input_parameters, "vmax1")),
-          alpha1_ip(get_ip(input_parameters, "alpha1")),
-          kparm_ip(get_ip(input_parameters, "kparm")),
-          beta_ip(get_ip(input_parameters, "beta")),
-          Rd_ip(get_ip(input_parameters, "Rd")),
-          Catm_ip(get_ip(input_parameters, "Catm")),
-          b0_ip(get_ip(input_parameters, "b0")),
-          b1_ip(get_ip(input_parameters, "b1")),
-          Gs_min_ip(get_ip(input_parameters, "Gs_min")),
-          theta_ip(get_ip(input_parameters, "theta")),
-          kd_ip(get_ip(input_parameters, "kd")),
-          chil_ip(get_ip(input_parameters, "chil")),
-          heightf_ip(get_ip(input_parameters, "heightf")),
-          LeafN_ip(get_ip(input_parameters, "LeafN")),
-          kpLN_ip(get_ip(input_parameters, "kpLN")),
-          lnb0_ip(get_ip(input_parameters, "lnb0")),
-          lnb1_ip(get_ip(input_parameters, "lnb1")),
-          lnfun_ip(get_ip(input_parameters, "lnfun")),
-          upperT_ip(get_ip(input_parameters, "upperT")),
-          lowerT_ip(get_ip(input_parameters, "lowerT")),
-          leafwidth_ip(get_ip(input_parameters, "leafwidth")),
-          et_equation_ip(get_ip(input_parameters, "et_equation")),
-          StomataWS_ip(get_ip(input_parameters, "StomataWS")),
-          specific_heat_of_air_ip(get_ip(input_parameters, "specific_heat_of_air")),
-          atmospheric_pressure_ip(get_ip(input_parameters, "atmospheric_pressure")),
-          water_stress_approach_ip(get_ip(input_parameters, "water_stress_approach")),
-          absorptivity_par_ip(get_ip(input_parameters, "absorptivity_par")),
+          // Get pointers to input quantities
+          nileafn(get_input(input_quantities, "nileafn")),
+          nkln(get_input(input_quantities, "nkln")),
+          nvmaxb1(get_input(input_quantities, "nvmaxb1")),
+          nvmaxb0(get_input(input_quantities, "nvmaxb0")),
+          nalphab1(get_input(input_quantities, "nalphab1")),
+          nalphab0(get_input(input_quantities, "nalphab0")),
+          nRdb1(get_input(input_quantities, "nRdb1")),
+          nRdb0(get_input(input_quantities, "nRdb0")),
+          nkpLN(get_input(input_quantities, "nkpLN")),
+          nlnb0(get_input(input_quantities, "nlnb0")),
+          nlnb1(get_input(input_quantities, "nlnb1")),
+          lai(get_input(input_quantities, "lai")),
+          time(get_input(input_quantities, "time")),
+          solar(get_input(input_quantities, "solar")),
+          temp(get_input(input_quantities, "temp")),
+          rh(get_input(input_quantities, "rh")),
+          windspeed(get_input(input_quantities, "windspeed")),
+          lat(get_input(input_quantities, "lat")),
+          nlayers(get_input(input_quantities, "nlayers")),
+          vmax1(get_input(input_quantities, "vmax1")),
+          alpha1(get_input(input_quantities, "alpha1")),
+          kparm(get_input(input_quantities, "kparm")),
+          beta(get_input(input_quantities, "beta")),
+          Rd(get_input(input_quantities, "Rd")),
+          Catm(get_input(input_quantities, "Catm")),
+          b0(get_input(input_quantities, "b0")),
+          b1(get_input(input_quantities, "b1")),
+          Gs_min(get_input(input_quantities, "Gs_min")),
+          theta(get_input(input_quantities, "theta")),
+          kd(get_input(input_quantities, "kd")),
+          chil(get_input(input_quantities, "chil")),
+          heightf(get_input(input_quantities, "heightf")),
+          LeafN(get_input(input_quantities, "LeafN")),
+          kpLN(get_input(input_quantities, "kpLN")),
+          lnfun(get_input(input_quantities, "lnfun")),
+          upperT(get_input(input_quantities, "upperT")),
+          lowerT(get_input(input_quantities, "lowerT")),
+          leafwidth(get_input(input_quantities, "leafwidth")),
+          et_equation(get_input(input_quantities, "et_equation")),
+          StomataWS(get_input(input_quantities, "StomataWS")),
+          specific_heat_of_air(get_input(input_quantities, "specific_heat_of_air")),
+          atmospheric_pressure(get_input(input_quantities, "atmospheric_pressure")),
+          water_stress_approach(get_input(input_quantities, "water_stress_approach")),
+          absorptivity_par(get_input(input_quantities, "absorptivity_par")),
+          par_energy_content(get_input(input_quantities, "par_energy_content")),
+          par_energy_fraction(get_input(input_quantities, "par_energy_fraction")),
+          leaf_transmittance(get_input(input_quantities, "leaf_transmittance")),
+          leaf_reflectance(get_input(input_quantities, "leaf_reflectance")),
 
-          // Get pointers to output parameters
-          canopy_assimilation_rate_op(get_op(output_parameters, "canopy_assimilation_rate")),
-          canopy_transpiration_rate_op(get_op(output_parameters, "canopy_transpiration_rate")),
-          canopy_conductance_op(get_op(output_parameters, "canopy_conductance")),
-          GrossAssim_op(get_op(output_parameters, "GrossAssim"))
+          // Get pointers to output quantities
+          canopy_assimilation_rate_op(get_op(output_quantities, "canopy_assimilation_rate")),
+          canopy_transpiration_rate_op(get_op(output_quantities, "canopy_transpiration_rate")),
+          canopy_conductance_op(get_op(output_quantities, "canopy_conductance")),
+          GrossAssim_op(get_op(output_quantities, "GrossAssim"))
     {
     }
-    static std::vector<std::string> get_inputs();
-    static std::vector<std::string> get_outputs();
+    static string_vector get_inputs();
+    static string_vector get_outputs();
 
    private:
-    // Pointers to input parameters
-    const double* nileafn_ip;
-    const double* nkln_ip;
-    const double* nvmaxb1_ip;
-    const double* nvmaxb0_ip;
-    const double* nalphab1_ip;
-    const double* nalphab0_ip;
-    const double* nRdb1_ip;
-    const double* nRdb0_ip;
-    const double* nkpLN_ip;
-    const double* nlnb0_ip;
-    const double* nlnb1_ip;
-    const double* lai_ip;
-    const double* time_ip;
-    const double* solar_ip;
-    const double* temp_ip;
-    const double* rh_ip;
-    const double* windspeed_ip;
-    const double* lat_ip;
-    const double* nlayers_ip;
-    const double* vmax1_ip;
-    const double* alpha1_ip;
-    const double* kparm_ip;
-    const double* beta_ip;
-    const double* Rd_ip;
-    const double* Catm_ip;
-    const double* b0_ip;
-    const double* b1_ip;
-    const double* Gs_min_ip;
-    const double* theta_ip;
-    const double* kd_ip;
-    const double* chil_ip;
-    const double* heightf_ip;
-    const double* LeafN_ip;
-    const double* kpLN_ip;
-    const double* lnb0_ip;
-    const double* lnb1_ip;
-    const double* lnfun_ip;
-    const double* upperT_ip;
-    const double* lowerT_ip;
-    const double* leafwidth_ip;
-    const double* et_equation_ip;
-    const double* StomataWS_ip;
-    const double* specific_heat_of_air_ip;
-    const double* atmospheric_pressure_ip;
-    const double* water_stress_approach_ip;
-    const double* absorptivity_par_ip;
+    // References to input quantities
+    double const& nileafn;
+    double const& nkln;
+    double const& nvmaxb1;
+    double const& nvmaxb0;
+    double const& nalphab1;
+    double const& nalphab0;
+    double const& nRdb1;
+    double const& nRdb0;
+    double const& nkpLN;
+    double const& nlnb0;
+    double const& nlnb1;
+    double const& lai;
+    double const& time;
+    double const& solar;
+    double const& temp;
+    double const& rh;
+    double const& windspeed;
+    double const& lat;
+    double const& nlayers;
+    double const& vmax1;
+    double const& alpha1;
+    double const& kparm;
+    double const& beta;
+    double const& Rd;
+    double const& Catm;
+    double const& b0;
+    double const& b1;
+    double const& Gs_min;
+    double const& theta;
+    double const& kd;
+    double const& chil;
+    double const& heightf;
+    double const& LeafN;
+    double const& kpLN;
+    double const& lnfun;
+    double const& upperT;
+    double const& lowerT;
+    double const& leafwidth;
+    double const& et_equation;
+    double const& StomataWS;
+    double const& specific_heat_of_air;
+    double const& atmospheric_pressure;
+    double const& water_stress_approach;
+    double const& absorptivity_par;
+    double const& par_energy_content;
+    double const& par_energy_fraction;
+    double const& leaf_transmittance;
+    double const& leaf_reflectance;
 
-    // Pointers to output parameters
+    // Pointers to output quantities
     double* canopy_assimilation_rate_op;
     double* canopy_transpiration_rate_op;
     double* canopy_conductance_op;
@@ -131,7 +136,7 @@ class c4_canopy : public SteadyModule
     void do_operation() const;
 };
 
-std::vector<std::string> c4_canopy::get_inputs()
+string_vector c4_canopy::get_inputs()
 {
     return {
         "nileafn",
@@ -168,8 +173,6 @@ std::vector<std::string> c4_canopy::get_inputs()
         "heightf",
         "LeafN",
         "kpLN",
-        "lnb0",
-        "lnb1",
         "lnfun",
         "upperT",
         "lowerT",
@@ -179,11 +182,15 @@ std::vector<std::string> c4_canopy::get_inputs()
         "specific_heat_of_air",   // J / kg / K
         "atmospheric_pressure",   // Pa
         "water_stress_approach",  // dimensionless switch
-        "absorptivity_par"        // dimensionless
+        "absorptivity_par",       // dimensionless
+        "par_energy_content",     // J / micromol
+        "par_energy_fraction",    // dimensionless
+        "leaf_transmittance",     // dimensionless
+        "leaf_reflectance"        // dimensionless
     };
 }
 
-std::vector<std::string> c4_canopy::get_outputs()
+string_vector c4_canopy::get_outputs()
 {
     return {
         "canopy_assimilation_rate",   // Mg / ha / hr
@@ -196,33 +203,30 @@ std::vector<std::string> c4_canopy::get_outputs()
 void c4_canopy::do_operation() const
 {
     // Collect inputs and make calculations
-    int doy = floor(*time_ip);                // Round time down to get the day of year
-    double hour = 24.0 * ((*time_ip) - doy);  // Get the fractional part as the hour
+    int doy = floor(time);              // Round time down to get the day of year
+    double hour = 24.0 * (time - doy);  // Get the fractional part as the hour
 
     struct nitroParms nitroP;
-    nitroP.ileafN = *nileafn_ip;
-    nitroP.kln = *nkln_ip;
-    nitroP.Vmaxb1 = *nvmaxb1_ip;
-    nitroP.Vmaxb0 = *nvmaxb0_ip;
-    nitroP.alphab1 = *nalphab1_ip;
-    nitroP.alphab0 = *nalphab0_ip;
-    nitroP.Rdb1 = *nRdb1_ip;
-    nitroP.Rdb0 = *nRdb0_ip;
-    nitroP.kpLN = *nkpLN_ip;
-    nitroP.lnb0 = *nlnb0_ip;
-    nitroP.lnb1 = *nlnb1_ip;
+    nitroP.ileafN = nileafn;
+    nitroP.kln = nkln;
+    nitroP.Vmaxb1 = nvmaxb1;
+    nitroP.Vmaxb0 = nvmaxb0;
+    nitroP.alphab1 = nalphab1;
+    nitroP.alphab0 = nalphab0;
+    nitroP.Rdb1 = nRdb1;
+    nitroP.Rdb0 = nRdb0;
+    nitroP.kpLN = nkpLN;
+    nitroP.lnb0 = nlnb0;
+    nitroP.lnb1 = nlnb1;
 
     // CanAC is located in CanAC.cpp
     struct Can_Str can_result = CanAC(
-        *lai_ip, doy, hour, *solar_ip, *temp_ip,
-        *rh_ip, *windspeed_ip, *lat_ip, *nlayers_ip, *vmax1_ip,
-        *alpha1_ip, *kparm_ip, *beta_ip, *Rd_ip, *Catm_ip,
-        *b0_ip, *b1_ip, *Gs_min_ip * 1e3, *theta_ip, *kd_ip, *chil_ip,
-        *heightf_ip, *LeafN_ip, *kpLN_ip, *lnb0_ip, *lnb1_ip,
-        *lnfun_ip, *upperT_ip, *lowerT_ip, nitroP, *leafwidth_ip,
-        *et_equation_ip, *StomataWS_ip, *specific_heat_of_air_ip,
-        *atmospheric_pressure_ip, *water_stress_approach_ip,
-        *absorptivity_par_ip);
+        lai, doy, hour, solar, temp, rh, windspeed, lat, nlayers, vmax1, alpha1,
+        kparm, beta, Rd, Catm, b0, b1, Gs_min * 1e3, theta, kd, chil, heightf,
+        LeafN, kpLN, lnfun, upperT, lowerT, nitroP, leafwidth,
+        et_equation, StomataWS, specific_heat_of_air, atmospheric_pressure,
+        water_stress_approach, absorptivity_par, par_energy_content,
+        par_energy_fraction, leaf_transmittance, leaf_reflectance);
 
     // Update the parameter list
     update(canopy_assimilation_rate_op, can_result.Assim);   // Mg / ha / hr.
