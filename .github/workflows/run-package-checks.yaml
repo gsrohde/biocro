@@ -9,10 +9,14 @@ on:
         description: 'Check the manual (yes/no)'
         required: false
         default: 'no'
+        type: choice
+        options:
+        - yes
+        - no
       check-vignettes:
         description: 'Check the vignettes (yes/no)'
         required: false
-        default: 'no'
+        type: boolean
       run-tests:
         description: 'Run the tests (yes/no)'
         required: false
