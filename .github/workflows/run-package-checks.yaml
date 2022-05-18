@@ -191,13 +191,10 @@ jobs:
   call-R-CMD-check:
     #uses: ./.github/workflows/new-R-CMD-check.yaml
     needs: [get_configuration, matrix_prep]
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(needs.matrix_prep.outputs.matrix) }}
     uses: ./.github/workflows/print-inputs.yaml
     with:
-      os: ${{ matrix.os }}
-      r-version: ${{ matrix.r }}
+      os: 'hi'#${{ matrix.os }}
+      r-version: 'lo'#${{ matrix.r }}
       #http-user-agent: ${{ 
       check-manual: ${{ needs.get_configuration.outputs.check-manual }}
       run-tests: ${{ needs.get_configuration.outputs.run-tests }}
