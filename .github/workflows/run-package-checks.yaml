@@ -52,8 +52,7 @@ jobs:
           # This filter uses the JMESPath query language to modify the
           # strategy matrix.  See https://jmespath.org/.
           filter:
-            '[?contains(runOnEvent, `${{ github.event_name }}`)
-               || (config-name == `${{ github.event.inputs.platform-to-check }}`)]'
+            '[?(config-name == `${{ github.event.inputs.platform-to-check }}`)]'
 
   # For debugging:
   display_matrix:
