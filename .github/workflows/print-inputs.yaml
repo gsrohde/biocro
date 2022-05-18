@@ -1,12 +1,12 @@
 on:
   workflow_call:
     inputs:
-      os
-      r-version
-      check-manual
-      run-tests
-      check-examples
-      needs-tinytex
+      os:
+      r-version:
+      check-manual:
+      run-tests:
+      check-examples:
+      needs-tinytex:
 
 jobs:
   reusable_workflow_job:
