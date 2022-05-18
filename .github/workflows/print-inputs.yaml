@@ -13,8 +13,8 @@ jobs:
     steps:
       - run: |
         echo os ${{ inputs.os }}
-        echo r-version ${{ inputs.r-version }}
-        echo check-manual ${{ inputs.check-manual }}
-        echo run-tests ${{ inputs.run-tests }}
-        echo check-examples ${{ inputs.check-examples }}
-        echo needs-tinytex ${{ inputs.needs-tinytex }}
+        echo "r-version ${{ inputs.r-version }}"
+        echo "check-manual ${{ inputs.check-manual }}"
+        echo "run-tests ${{ inputs.run-tests }}"
+        echo "check-examples ${{ inputs.check-examples }}"
+        echo "needs-tinytex ${{ inputs.needs-tinytex }}"
