@@ -35,71 +35,9 @@ on:
         default: R 3.5 on Ubuntu
 
 jobs:
-  get_configuration:
-    name: Get run configuration
-    runs-on: ubuntu-latest
-    outputs:
-      # These are essentially validated, booleanized versions of the input parameters.
-      check-manual: ${{ steps.set_outputs.outputs.check-manual }}    
-      check-vignettes: ${{ steps.set_outputs.outputs.check-vignettes }}
-      run-tests: ${{ steps.set_outputs.outputs.run-tests }}    
-      check-examples: ${{ steps.set_outputs.outputs.check-examples }}
-      check-windows: ${{ steps.set_outputs.outputs.check-windows }}
-      check-mac: ${{ steps.set_outputs.outputs.check-mac }}    
-      check-r-release-version-on-ubuntu: ${{ steps.set_outputs.outputs.check-r-release-version-on-ubuntu }}    
-      check-r-devel-version-on-ubuntu: ${{ steps.set_outputs.outputs.check-r-devel-version-on-ubuntu }}
-
-      # This is computed in the "check-if-tinytex-needed" step.
-      need-tinytex: ${{ steps.check-if-tinytex-needed.outputs.need-tinytex }}
-    steps:
-      - name: Set configuration variables
-        # This is only for manual dispatches.
-        if: github.event_name == 'workflow_dispatch'
-        id: set_outputs
-        run: |
-          echo "::set-output name=check-manual::${{ contains(fromJSON(env.yes-values),
-                                                             github.event.inputs.check-manual) }}"
-          echo "::set-output name=check-vignettes::${{ contains(fromJSON(env.yes-values),
-                                                                github.event.inputs.check-vignettes) }}"
-          echo "::set-output name=run-tests::${{ contains(fromJSON(env.yes-values),
-                                                          github.event.inputs.run-tests) }}"
-          echo "::set-output name=check-examples::${{ contains(fromJSON(env.yes-values),
-                                                               github.event.inputs.check-examples) }}"
-          echo "::set-output name=check-windows::${{ contains(fromJSON(env.yes-values),
-                                                              github.event.inputs.check-windows) }}"
-          echo "::set-output name=check-mac::${{ contains(fromJSON(env.yes-values),
-                                                          github.event.inputs.check-mac) }}"
-          echo "::set-output name=check-r-release-version-on-ubuntu::${{
-                    contains(fromJSON(env.yes-values),
-                             github.event.inputs.check-r-release-version-on-ubuntu) }}"
-          echo "::set-output name=check-r-devel-version-on-ubuntu::${{
-                    contains(fromJSON(env.yes-values),
-                             github.event.inputs.check-r-devel-version-on-ubuntu) }}"
-
-      - name: Check need for TinyTex
-        id: check-if-tinytex-needed
-
-        # TinyTex must be installed iff we are checking either the
-        # manual or the vignettes.  We always build and check the
-        # manual if the workflow is triggered automatically (that is,
-        # if the triggering event ISN'T workflow_dispatch).
-        # Otherwise, if the workflow is dispatched manually, we need
-        # to install TinyTex only if user specified either the "check
-        # the manual" or "check the vignettes".
-
-        # Note: The second and third disjuncts in this "if" value are
-        # alternative ways of getting a boolean value from the outputs
-        # (which are strings):
-        run: |
-          echo "::set-output name=need-tinytex::${{
-            github.event_name != 'workflow_dispatch'
-            || steps.set_outputs.outputs.check-vignettes == 'true'
-            || fromJSON(steps.set_outputs.outputs.check-manual)
-          }}"
 
   matrix_prep:
     name: Prepare strategy matrix
-    needs: get_configuration
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
@@ -131,7 +69,7 @@ jobs:
 
   call-R-CMD-check:
     #uses: ./.github/workflows/new-R-CMD-check.yaml
-    needs: [get_configuration, matrix_prep]
+    needs: matrix_prep
     uses: ./.github/workflows/print-inputs.yaml
     with:
       strategy-matrix: ${{ needs.matrix_prep.outputs.matrix }}
