@@ -2,11 +2,17 @@ on:
   workflow_call:
     inputs:
       os:
+        type: string
       r-version:
+        type: string
       check-manual:
+        type: string
       run-tests:
+        type: string
       check-examples:
+        type: string
       needs-tinytex:
+        type: string
 
 jobs:
   reusable_workflow_job:
