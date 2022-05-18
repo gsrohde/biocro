@@ -6,52 +6,33 @@ on:
     inputs:
       # What options should be passed to "R CMD check"?
       check-manual:
-        description: 'Check the manual (yes/no)'
-        required: false
-        default: 'no'
-        type: choice
-        options:
-        - yes
-        - no
-        - maybe
-      check-vignettes:
-        description: 'Check the vignettes (yes/no)'
-        required: false
+        description: 'Check the manual'
         type: boolean
+        default: true
+      check-vignettes:
+        description: 'Check the vignettes'
+        type: boolean
+        default: true
       run-tests:
         description: 'Run the tests (yes/no)'
-        required: false
-        default: 'yes'
+        type: boolean
+        default: true
       check-examples:
         description: 'Check the examples (yes/no)'
-        required: false
-        default: 'yes'
+        type: boolean
+        default: true
 
-      # Which platforms should we test?
-      check-windows:
-        description: 'Test build on Windows (yes/no)'
-        required: false
-        default: 'no'
-      check-mac:
-        description: 'Test build on MacOS (yes/no)'
-        required: false
-        default: 'no'
-      check-r-release-version-on-ubuntu:
-        description: 'Test build on Ubuntu using the release version of R (yes/no)'
-        required: false
-        default: 'yes'
-      check-r-devel-version-on-ubuntu:
-        description: 'Test build on Ubuntu using the development version of R (yes/no)'
-        required: false
-        default: 'no'
-
-env:
-  # Note that checks against these values will all be case
-  # insensitive!  (Yes, these are interdependent, but it was too
-  # complicated to compute some values from others.)
-  valid-input-values: '[ "yes", "y", "no", "n" ]'
-  yes-values: '[ "yes", "y" ]'
-  no-values: '[ "no", "n" ]'
+      # Which platform should we test?
+      platform-to-check:
+        description: 'Platform to check'
+        type: choice
+        options:
+          - R 3.5 on macOS
+          - R 3.5 on Windows
+          - R 3.5 on Ubuntu
+          - R release version on Ubuntu
+          - R devel version on Ubuntu
+        default: R 3.5 on Ubuntu
 
 jobs:
   get_configuration:
@@ -116,17 +97,6 @@ jobs:
             || fromJSON(steps.set_outputs.outputs.check-manual)
           }}"
 
-# debug:
-#   name: Debug
-#   needs: get_configuration
-#   runs-on: ubuntu-latest
-#   steps:
-#     - run: |
-#         echo "${{ needs.get_configuration.outputs.check-windows }}"
-#         echo "${{ needs.get_configuration.outputs.check-mac }}"
-#         echo "${{ needs.get_configuration.outputs.check-r-release-version-on-ubuntu }}"
-#         echo "${{ needs.get_configuration.outputs.check-r-devel-version-on-ubuntu }}"
-
   matrix_prep:
     name: Prepare strategy matrix
     needs: get_configuration
@@ -139,44 +109,37 @@ jobs:
         name: Conditional Build Matrix
         uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
         with:
-          inputFile: '.github/workflows/matrix_includes_for_R-CMD-check.json'
+          inputFile: '.github/workflows/strategy_matrix.json'
 
           # This filter uses the JMESPath query language to modify the
           # strategy matrix.  See https://jmespath.org/.
           filter:
             '[?contains(runOnEvent, `${{ github.event_name }}`)
-               || (contains(os, `"windows"`)
-                   && `${{ needs.get_configuration.outputs.check-windows }}`)
-               || (contains(os, `"macOS"`)
-                   && `${{ needs.get_configuration.outputs.check-mac }}`)
-               || (contains(os, `"ubuntu"`)
-                   && ((contains(r, `"release"`)
-                        && `${{ needs.get_configuration.outputs.check-r-release-version-on-ubuntu }}`)
-                       || (contains(r, `"devel"`)
-                           && `${{ needs.get_configuration.outputs.check-r-devel-version-on-ubuntu }}`)))]'
+               || (config-name == `${{ github.event.inputs.platform-to-check }}]'
 
-# # For debugging:
-# display_matrix:
-#   name: Display strategy matrix
-#   needs: matrix_prep # Supplies matrix output.
-#   runs-on: ubuntu-latest
-#   steps:
-#   - name: Report Configuration
-#     env:
-#       MATRIX_CONTEXT: ${{ needs.matrix_prep.outputs.matrix }}
-#     run: |
-#       echo "matrix: $MATRIX_CONTEXT"
+  # For debugging:
+  display_matrix:
+    name: Display strategy matrix
+    needs: matrix_prep # Supplies matrix output.
+    runs-on: ubuntu-latest
+    steps:
+    - name: Report Configuration
+      env:
+        MATRIX_CONTEXT: ${{ needs.matrix_prep.outputs.matrix }}
+      run: |
+        echo "matrix: $MATRIX_CONTEXT"
 
   call-R-CMD-check:
     #uses: ./.github/workflows/new-R-CMD-check.yaml
     needs: [get_configuration, matrix_prep]
     uses: ./.github/workflows/print-inputs.yaml
     with:
-      os: 'hi'#${{ matrix.os }}
-      r-version: 'lo'#${{ matrix.r }}
+      stratege-matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      #os: 'hi'#${{ matrix.os }}
+      #r-version: 'lo'#${{ matrix.r }}
       #http-user-agent: ${{ 
-      check-manual: ${{ needs.get_configuration.outputs.check-manual }}
-      run-tests: ${{ needs.get_configuration.outputs.run-tests }}
-      check-examples: ${{ needs.get_configuration.outputs.check-examples }}
-      check-vignettes: ${{ needs.get_configuration.outputs.check-vignettes }}
-      needs-tinytex: 'no'#${{ steps.check-if-tinytex-needed.outputs.need-tinytex }}
+      check-manual: ${{ github.event.inputs.check-manual }}
+      run-tests: ${{ github.event.inputs.run-tests }}
+      check-examples: ${{ github.event.inputs.check-examples }}
+      check-vignettes: ${{ github.event.inputs.check-vignettes }}
+

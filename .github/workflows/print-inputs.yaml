@@ -1,7 +1,7 @@
 on:
   workflow_call:
     inputs:
-      os:
+      strategy-matrix:
         type: string
       r-version:
         type: string
@@ -13,18 +13,24 @@ on:
         type: string
       check-vignettes:
         type: string
-      needs-tinytex:
-        type: string
 
 jobs:
   reusable_workflow_job:
     runs-on: ubuntu-latest
     steps:
       - run: |
-          echo os ${{ inputs.os }}
-          echo r-version ${{ inputs.r-version }}
+          echo strategy-matrix ${{ inputs.strategy-matrix }}
           echo check-manual ${{ inputs.check-manual }}
           echo run-tests ${{ inputs.run-tests }}
           echo check-examples ${{ inputs.check-examples }}
           echo check-vignettes ${{ inputs.check-vignettes }}
-          echo needs-tinytex ${{ inputs.needs-tinytex }}
+
+  use-strategy-matrix:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(${{ inputs.strategy-matrix }}) }}
+    steps:
+      - run: |
+          echo os ${{ matrix.os }}
+          echo R version ${{ matrix.r }}
