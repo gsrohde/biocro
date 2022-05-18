@@ -1,0 +1,207 @@
+name: R-CMD-check
+
+on:
+  push:
+  workflow_dispatch:
+    # When running manually, allow users to customize the run:
+    inputs:
+      # What options should be passed to "R CMD check"?
+      check-manual:
+        description: 'Check the manual (yes/no)'
+        required: false
+        default: 'no'
+      check-vignettes:
+        description: 'Check the vignettes (yes/no)'
+        required: false
+        default: 'no'
+      run-tests:
+        description: 'Run the tests (yes/no)'
+        required: false
+        default: 'yes'
+      check-examples:
+        description: 'Check the examples (yes/no)'
+        required: false
+        default: 'yes'
+
+      # Which platforms should we test?
+      check-windows:
+        description: 'Test build on Windows (yes/no)'
+        required: false
+        default: 'no'
+      check-mac:
+        description: 'Test build on MacOS (yes/no)'
+        required: false
+        default: 'no'
+      check-r-release-version-on-ubuntu:
+        description: 'Test build on Ubuntu using the release version of R (yes/no)'
+        required: false
+        default: 'yes'
+      check-r-devel-version-on-ubuntu:
+        description: 'Test build on Ubuntu using the development version of R (yes/no)'
+        required: false
+        default: 'no'
+
+env:
+  # Note that checks against these values will all be case
+  # insensitive!  (Yes, these are interdependent, but it was too
+  # complicated to compute some values from others.)
+  valid-input-values: '[ "yes", "y", "no", "n" ]'
+  yes-values: '[ "yes", "y" ]'
+  no-values: '[ "no", "n" ]'
+
+jobs:
+  get_configuration:
+    name: Get run configuration
+    runs-on: ubuntu-latest
+    outputs:
+      # These are essentially validated, booleanized versions of the input parameters.
+      check-manual: ${{ steps.set_outputs.outputs.check-manual }}    
+      check-vignettes: ${{ steps.set_outputs.outputs.check-vignettes }}
+      run-tests: ${{ steps.set_outputs.outputs.run-tests }}    
+      check-examples: ${{ steps.set_outputs.outputs.check-examples }}
+      check-windows: ${{ steps.set_outputs.outputs.check-windows }}
+      check-mac: ${{ steps.set_outputs.outputs.check-mac }}    
+      check-r-release-version-on-ubuntu: ${{ steps.set_outputs.outputs.check-r-release-version-on-ubuntu }}    
+      check-r-devel-version-on-ubuntu: ${{ steps.set_outputs.outputs.check-r-devel-version-on-ubuntu }}
+
+      # This is computed in the "check-if-tinytex-needed" step.
+      need-tinytex: ${{ steps.check-if-tinytex-needed.outputs.need-tinytex }}
+    steps:
+      - name: Validate Input
+        run: |
+          echo "ALL_INPUTS_VALID=${{
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-manual) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-vignettes) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.run-tests) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-examples) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-windows) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-mac) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-r-release-version-on-ubuntu) &&
+            contains(fromJSON(env.valid-input-values), github.event.inputs.check-r-devel-version-on-ubuntu)
+          }}" >> $GITHUB_ENV
+
+   ## - name: Debug validity check
+   ##   run: |
+   ##     echo "${{ github.event_name }}"
+   ##     echo "${{ github.event_name == 'workflow_dispatch' }}"
+   ##     echo "${{  env.ALL_INPUTS_VALID }}"
+   ##     echo "${{  env.ALL_INPUTS_VALID == 'false' }}"
+
+      - name: Abort if invalid
+        if: github.event_name == 'workflow_dispatch' && env.ALL_INPUTS_VALID == 'false'
+        run: |
+          echo "::error::All inputs must be either 'yes', 'y', 'no', or 'n'."
+          exit 1 # Stop the workflow if bad input was given.
+
+      - name: Set configuration variables
+        # This is only for manual dispatches.
+        if: github.event_name == 'workflow_dispatch'
+        id: set_outputs
+        run: |
+          echo "::set-output name=check-manual::${{ contains(fromJSON(env.yes-values),
+                                                             github.event.inputs.check-manual) }}"
+          echo "::set-output name=check-vignettes::${{ contains(fromJSON(env.yes-values),
+                                                                github.event.inputs.check-vignettes) }}"
+          echo "::set-output name=run-tests::${{ contains(fromJSON(env.yes-values),
+                                                          github.event.inputs.run-tests) }}"
+          echo "::set-output name=check-examples::${{ contains(fromJSON(env.yes-values),
+                                                               github.event.inputs.check-examples) }}"
+          echo "::set-output name=check-windows::${{ contains(fromJSON(env.yes-values),
+                                                              github.event.inputs.check-windows) }}"
+          echo "::set-output name=check-mac::${{ contains(fromJSON(env.yes-values),
+                                                          github.event.inputs.check-mac) }}"
+          echo "::set-output name=check-r-release-version-on-ubuntu::${{
+                    contains(fromJSON(env.yes-values),
+                             github.event.inputs.check-r-release-version-on-ubuntu) }}"
+          echo "::set-output name=check-r-devel-version-on-ubuntu::${{
+                    contains(fromJSON(env.yes-values),
+                             github.event.inputs.check-r-devel-version-on-ubuntu) }}"
+
+      - name: Check need for TinyTex
+        id: check-if-tinytex-needed
+
+        # TinyTex must be installed iff we are checking either the
+        # manual or the vignettes.  We always build and check the
+        # manual if the workflow is triggered automatically (that is,
+        # if the triggering event ISN'T workflow_dispatch).
+        # Otherwise, if the workflow is dispatched manually, we need
+        # to install TinyTex only if user specified either the "check
+        # the manual" or "check the vignettes".
+
+        # Note: The second and third disjuncts in this "if" value are
+        # alternative ways of getting a boolean value from the outputs
+        # (which are strings):
+        run: |
+          echo "::set-output name=need-tinytex::${{
+            github.event_name != 'workflow_dispatch'
+            || steps.set_outputs.outputs.check-vignettes == 'true'
+            || fromJSON(steps.set_outputs.outputs.check-manual)
+          }}"
+
+# debug:
+#   name: Debug
+#   needs: get_configuration
+#   runs-on: ubuntu-latest
+#   steps:
+#     - run: |
+#         echo "${{ needs.get_configuration.outputs.check-windows }}"
+#         echo "${{ needs.get_configuration.outputs.check-mac }}"
+#         echo "${{ needs.get_configuration.outputs.check-r-release-version-on-ubuntu }}"
+#         echo "${{ needs.get_configuration.outputs.check-r-devel-version-on-ubuntu }}"
+
+  matrix_prep:
+    name: Prepare strategy matrix
+    needs: get_configuration
+    runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v2
+      - id: set-matrix
+        name: Conditional Build Matrix
+        uses: JoshuaTheMiller/conditional-build-matrix@0.0.1
+        with:
+          inputFile: '.github/workflows/matrix_includes_for_R-CMD-check.json'
+
+          # This filter uses the JMESPath query language to modify the
+          # strategy matrix.  See https://jmespath.org/.
+          filter:
+            '[?contains(runOnEvent, `${{ github.event_name }}`)
+               || (contains(os, `"windows"`)
+                   && `${{ needs.get_configuration.outputs.check-windows }}`)
+               || (contains(os, `"macOS"`)
+                   && `${{ needs.get_configuration.outputs.check-mac }}`)
+               || (contains(os, `"ubuntu"`)
+                   && ((contains(r, `"release"`)
+                        && `${{ needs.get_configuration.outputs.check-r-release-version-on-ubuntu }}`)
+                       || (contains(r, `"devel"`)
+                           && `${{ needs.get_configuration.outputs.check-r-devel-version-on-ubuntu }}`)))]'
+
+# # For debugging:
+# display_matrix:
+#   name: Display strategy matrix
+#   needs: matrix_prep # Supplies matrix output.
+#   runs-on: ubuntu-latest
+#   steps:
+#   - name: Report Configuration
+#     env:
+#       MATRIX_CONTEXT: ${{ needs.matrix_prep.outputs.matrix }}
+#     run: |
+#       echo "matrix: $MATRIX_CONTEXT"
+
+  call-R-CMD-check
+    #uses: ./.github/workflows/new-R-CMD-check.yaml
+    needs: [get_configuration, matrix_prep]
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(needs.matrix_prep.outputs.matrix) }}
+    uses: ./.github/workflows/print-inputs.yaml
+    with:
+      os: ${{ matrix.os }}
+      r-version: ${{ matrix.r }}
+      #http-user-agent: ${{ 
+      check-manual: ${{ needs.get_configuration.outputs.check-manual }}
+      run-tests: ${{ needs.get_configuration.outputs.run-tests }}
+      check-examples: ${{ needs.get_configuration.outputs.check-examples }}
+      check-vignettes: ${{ needs.get_configuration.outputs.check-vignettes }}
+      needs-tinytex: ${{ steps.check-if-tinytex-needed.outputs.need-tinytex }}

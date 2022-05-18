@@ -7,7 +7,7 @@ name: R-CMD-check-revised
 
 jobs:
   R-CMD-check:
-    name: Check R package on platform ${{ matrix.config.os }} using the ${{ matrix.config.r }} version of R
+    name: Check R package on ${{ matrix.config.os }} using R version ${{ matrix.config.r }}
 
     runs-on: ${{ matrix.config.os }}
 

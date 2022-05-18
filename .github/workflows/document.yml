@@ -4,20 +4,6 @@
 name: Update Documentation
 
 on:
-  push:
-    paths:
-    # Include all possible Doxygen source files ...
-    - 'src/**.cpp'
-    - 'src/**.hpp'
-    - 'src/**.h'
-    - 'src/**.dox'
-    - 'src/**.md'
-    - 'src/**.markdown'
-    - 'doxygen/markdown/*.md'
-    # ... plus files administering the workflow ...
-    - '.github/**'
-    - 'doxygen/Makefile'
-    - 'doxygen/Doxyfile'
   workflow_dispatch:
     # [no inputs]
 

@@ -4,7 +4,6 @@
 name: Generate pkgdown and bookdown documentation
 
 on:
-  push:
   workflow_dispatch:
     # [no inputs]
 

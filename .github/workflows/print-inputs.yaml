@@ -1,0 +1,20 @@
+on:
+  workflow-call:
+    inputs:
+      os
+      r-version
+      check-manual
+      run-tests
+      check-examples
+      needs-tinytex
+
+jobs:
+  reusable_workflow_job:
+    steps:
+      - run: |
+        echo os ${{ inputs.os }}
+        echo "r-version" ${{ inputs.r-version }}
+        echo "check-manual" ${{ inputs.check-manual }}
+        echo "run-tests" ${{ inputs.run-tests }}
+        echo "check-examples" ${{ inputs.check-examples }}
+        echo "needs-tinytex" ${{ inputs.needs-tinytex }}
