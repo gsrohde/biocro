@@ -1,4 +1,4 @@
-name: R-CMD-check
+name: run-R-CMD-check
 
 on:
   workflow_dispatch:
