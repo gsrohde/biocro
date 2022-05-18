@@ -12,7 +12,7 @@ jobs:
   reusable_workflow_job:
     steps:
       - run: |
-        echo os ${{ inputs.os }}
+        echo "os ${{ inputs.os }}"
         echo "r-version ${{ inputs.r-version }}"
         echo "check-manual ${{ inputs.check-manual }}"
         echo "run-tests ${{ inputs.run-tests }}"
