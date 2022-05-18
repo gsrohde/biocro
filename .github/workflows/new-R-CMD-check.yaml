@@ -17,6 +17,7 @@ jobs:
         config:
           - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
           - {os: ubuntu-latest,   r: 'release'}
+          - {os: ubuntu-latest,   r: '3.5'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -83,4 +84,5 @@ jobs:
         with:
           upload-snapshots: true
           args: 'c("--no-tests", "--as-cran")'
-          build-args: 'c()'
+          build_args: 'c()'
+          error-on: '"error"'
