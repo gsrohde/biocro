@@ -82,3 +82,5 @@ jobs:
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
+          args: 'c("--no-tests", "--as-cran")'
+          build-args: 'c()'
