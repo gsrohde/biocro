@@ -134,7 +134,7 @@ jobs:
     needs: [get_configuration, matrix_prep]
     uses: ./.github/workflows/print-inputs.yaml
     with:
-      stratege-matrix: ${{ needs.matrix_prep.outputs.matrix }}
+      strategy-matrix: ${{ needs.matrix_prep.outputs.matrix }}
       #os: 'hi'#${{ matrix.os }}
       #r-version: 'lo'#${{ matrix.r }}
       #http-user-agent: ${{ 
