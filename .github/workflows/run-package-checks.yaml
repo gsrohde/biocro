@@ -188,7 +188,7 @@ jobs:
 #     run: |
 #       echo "matrix: $MATRIX_CONTEXT"
 
-  call-R-CMD-check
+  call-R-CMD-check:
     #uses: ./.github/workflows/new-R-CMD-check.yaml
     needs: [get_configuration, matrix_prep]
     strategy:
