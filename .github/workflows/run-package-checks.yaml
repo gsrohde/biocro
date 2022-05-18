@@ -13,6 +13,7 @@ on:
         options:
         - yes
         - no
+        - maybe
       check-vignettes:
         description: 'Check the vignettes (yes/no)'
         required: false
@@ -70,32 +71,6 @@ jobs:
       # This is computed in the "check-if-tinytex-needed" step.
       need-tinytex: ${{ steps.check-if-tinytex-needed.outputs.need-tinytex }}
     steps:
-      - name: Validate Input
-        run: |
-          echo "ALL_INPUTS_VALID=${{
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-manual) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-vignettes) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.run-tests) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-examples) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-windows) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-mac) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-r-release-version-on-ubuntu) &&
-            contains(fromJSON(env.valid-input-values), github.event.inputs.check-r-devel-version-on-ubuntu)
-          }}" >> $GITHUB_ENV
-
-   ## - name: Debug validity check
-   ##   run: |
-   ##     echo "${{ github.event_name }}"
-   ##     echo "${{ github.event_name == 'workflow_dispatch' }}"
-   ##     echo "${{  env.ALL_INPUTS_VALID }}"
-   ##     echo "${{  env.ALL_INPUTS_VALID == 'false' }}"
-
-      - name: Abort if invalid
-        if: github.event_name == 'workflow_dispatch' && env.ALL_INPUTS_VALID == 'false'
-        run: |
-          echo "::error::All inputs must be either 'yes', 'y', 'no', or 'n'."
-          exit 1 # Stop the workflow if bad input was given.
-
       - name: Set configuration variables
         # This is only for manual dispatches.
         if: github.event_name == 'workflow_dispatch'
