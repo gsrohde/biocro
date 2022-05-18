@@ -11,11 +11,14 @@ on:
         type: string
       check-examples:
         type: string
+      check-vignettes:
+        type: string
       needs-tinytex:
         type: string
 
 jobs:
   reusable_workflow_job:
+    runs-on: ubuntu-latest
     steps:
       - run: |
           echo "os ${{ inputs.os }}"
