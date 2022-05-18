@@ -1,7 +1,6 @@
 name: R-CMD-check
 
 on:
-  push:
   workflow_dispatch:
     # When running manually, allow users to customize the run:
     inputs:
