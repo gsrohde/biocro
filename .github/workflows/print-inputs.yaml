@@ -3,8 +3,6 @@ on:
     inputs:
       strategy-matrix:
         type: string
-      r-version:
-        type: string
       check-manual:
         type: string
       run-tests:

@@ -5,16 +5,14 @@ on:
     inputs:
       strategy-matrix:
         type: string
-      r-version:
-        type: string
       check-manual:
-        type: boolean
+        type: string
       run-tests:
-        type: boolean
+        type: string
       check-examples:
-        type: boolean
+        type: string
       check-vignettes:
-        type: boolean
+        type: string
 
 name: R-CMD-check-revised
 
