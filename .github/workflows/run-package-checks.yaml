@@ -36,6 +36,14 @@ on:
 
 jobs:
 
+  test:
+    name: Read file
+    runs-on: ubuntu-latest
+    steps:
+    - name: Read
+      run: |
+        cat DESCRIPTION
+
   matrix_prep:
     name: Prepare strategy matrix
     runs-on: ubuntu-latest
