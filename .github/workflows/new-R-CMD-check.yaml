@@ -1,23 +1,56 @@
 # Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
 # Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
 on:
-  workflow_dispatch
+  workflow_call:
+    inputs:
+      strategy-matrix:
+        type: string
+      r-version:
+        type: string
+      check-manual:
+        type: boolean
+      run-tests:
+        type: boolean
+      check-examples:
+        type: boolean
+      check-vignettes:
+        type: boolean
 
 name: R-CMD-check-revised
 
-jobs:
-  R-CMD-check:
-    name: Check R package on ${{ matrix.config.os }} using R version ${{ matrix.config.r }}
+env:
+  NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
 
-    runs-on: ${{ matrix.config.os }}
+jobs:
+
+  Echo-inputs:
+    runs-on: ubuntu-latest
+    steps:
+      - run: |
+          echo strategy-matrix ${{ inputs.strategy-matrix }}
+          echo check-manual ${{ inputs.check-manual }}
+          echo run-tests ${{ inputs.run-tests }}
+          echo check-examples ${{ inputs.check-examples }}
+          echo check-vignettes ${{ inputs.check-vignettes }}
+
+  Show-current-strategy-matrix-values:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJSON(inputs.strategy-matrix) }}
+    steps:
+      - run: |
+          echo os ${{ matrix.os }}
+          echo R version ${{ matrix.r }}
+
+  R-CMD-check:
+    name: Check R package on ${{ matrix.os }} using R version ${{ matrix.r }}
+
+    runs-on: ${{ matrix.os }}
 
     strategy:
       fail-fast: false
-      matrix:
-        config:
-          - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-          - {os: ubuntu-latest,   r: '3.5'}
+      matrix: ${{ fromJSON(inputs.strategy-matrix) }}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -27,14 +60,19 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
+      # REMOVE THIS LATER!!!
+      - name: Read
+        run: |
+          cat DESCRIPTION
+
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
         with:
-          r-version: ${{ matrix.config.r }}
-          http-user-agent: ${{ matrix.config.http-user-agent }}
+          r-version: ${{ matrix.r }}
+          http-user-agent: ${{ matrix.http-user-agent }}
           use-public-rspm: true
 
       - uses: r-lib/actions/setup-r-dependencies@v2
@@ -43,11 +81,11 @@ jobs:
           needs: check
 
       - name: Install TinyTex
-        #if: needs.get_configuration.outputs.need-tinytex == 'true'
+        if: env.NEED_TEX
         uses: r-lib/actions/setup-tinytex@v2
 
       - name: Install extra LaTeX packages
-        #if: needs.get_configuration.outputs.need-tinytex == 'true' 
+        if: inputs.check-vignettes
         run: |
 
           # Install the tinytex R package to run tinytex::pdflatex.
@@ -79,10 +117,38 @@ jobs:
 
         shell: Rscript {0}
 
+      - name: Compute check args
+        run: |
+          build_args_value <- c()
+          args_value <- c('--as-cran')
+          if ('${{ needs.get_configuration.outputs.check-manual }}' == 'false') {
+            build_args_value <- append(build_args_value, '--no-manual')
+            args_value <- append(args_value, '--no-manual')
+          }
+          if ('${{ needs.get_configuration.outputs.check-vignettes }}' == 'false') {
+            build_args_value <- append(build_args_value, '--no-build-vignettes')
+            args_value <- append(args_value, '--ignore-vignettes')
+          }
+          if ('${{ needs.get_configuration.outputs.run-tests }}' == 'false') {
+            args_value <- append(args_value, '--no-tests')
+          }
+          if ('${{ needs.get_configuration.outputs.check-examples }}' == 'false') {
+            args_value <- append(args_value, '--no-examples')
+          }
+
+          # serialize these vectors as strings:
+          build_args <- paste0("c('", paste(build_args_value, collapse = "', '"), "')")
+          args <- paste0("c('", paste(args_value, collapse = "', '"), "')")
+
+          # store these in the environment
+          system(sprintf('echo "BUILD_ARGS=%s" >> $GITHUB_ENV', build_args))
+          system(sprintf('echo "ARGS=%s" >> $GITHUB_ENV', args))
+        shell: Rscript {0}
+
       - name: Check package
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
-          args: 'c("--no-tests", "--as-cran")'
-          build_args: 'c()'
+          args: ${{ env.ARGS }}
+          build_args: ${{ env.BUILD_ARGS }}
           error-on: '"error"'

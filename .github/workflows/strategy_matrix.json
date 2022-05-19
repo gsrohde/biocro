@@ -27,6 +27,7 @@
         "configName": "R devel version on Ubuntu",
         "os": "ubuntu-20.04",
         "r": "devel",
+        "http-user-agent": "release",
         "runOnEvent": ["pull_request","push"]
     }
 ]

@@ -36,14 +36,6 @@ on:
 
 jobs:
 
-  test:
-    name: Read file
-    runs-on: ubuntu-latest
-    steps:
-    - name: Read
-      run: |
-        cat DESCRIPTION
-
   matrix_prep:
     name: Prepare strategy matrix
     runs-on: ubuntu-latest
@@ -75,14 +67,11 @@ jobs:
         echo "matrix: $MATRIX_CONTEXT"
 
   call-R-CMD-check:
-    #uses: ./.github/workflows/new-R-CMD-check.yaml
+    uses: ./.github/workflows/new-R-CMD-check.yaml
     needs: matrix_prep
-    uses: ./.github/workflows/print-inputs.yaml
+    #uses: ./.github/workflows/print-inputs.yaml
     with:
       strategy-matrix: ${{ needs.matrix_prep.outputs.matrix }}
-      #os: 'hi'#${{ matrix.os }}
-      #r-version: 'lo'#${{ matrix.r }}
-      #http-user-agent: ${{ 
       check-manual: ${{ github.event.inputs.check-manual }}
       run-tests: ${{ github.event.inputs.run-tests }}
       check-examples: ${{ github.event.inputs.check-examples }}
