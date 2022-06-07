@@ -96,7 +96,7 @@ jobs:
         run: |
           echo "inputs.check-vignettes: ${{ inputs.check-vignettes }}"
           echo "inputs.check-vignettes == true: ${{ inputs.check-vignettes == true }}"
-          echo "inputs.check-vignettes == 'true': ${{ inputs.check-vignettes == 'true' }}
+          echo "inputs.check-vignettes == 'true': ${{ inputs.check-vignettes == 'true' }}"
           echo "inputs.check-vignettes == false: ${{ inputs.check-vignettes == false }}"
           echo "inputs.check-vignettes == 'false': ${{ inputs.check-vignettes == 'false' }}"
 
