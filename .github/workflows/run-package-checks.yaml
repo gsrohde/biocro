@@ -1,6 +1,7 @@
 name: run-R-CMD-check
 
 on:
+  push:
   workflow_dispatch:
     # When running manually, allow users to customize the run:
     inputs:
@@ -14,11 +15,11 @@ on:
         type: boolean
         default: true
       run-tests:
-        description: 'Run the tests (yes/no)'
+        description: 'Run the tests'
         type: boolean
         default: true
       check-examples:
-        description: 'Check the examples (yes/no)'
+        description: 'Check the examples'
         type: boolean
         default: true
 
