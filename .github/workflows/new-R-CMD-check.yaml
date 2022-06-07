@@ -92,6 +92,27 @@ jobs:
         if: env.NEED_TEX == 'true'
         uses: r-lib/actions/setup-tinytex@v2
 
+      - name: debug 1
+        run: |
+          echo "inputs.check-vignettes: ${{ inputs.check-vignettes }}"
+          echo "inputs.check-vignettes == true: ${{ inputs.check-vignettes == true }}"
+          echo "inputs.check-vignettes == 'true': ${{ inputs.check-vignettes == 'true' }}"
+
+      - name: debug 2
+        if: inputs.check-vignettes
+        run: |
+          echo "debug 2 ran"
+
+      - name: debug 3
+        if: $${ inputs.check-vignettes }}
+        run: |
+          echo "debug 3 ran"
+
+      - name: debug 4
+        if: $${ inputs.check-vignettes == 'true' }}
+        run: |
+          echo "debug 4 ran"
+
       - name: Install extra LaTeX packages
         if: inputs.check-vignettes
         run: |
