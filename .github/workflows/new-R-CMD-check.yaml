@@ -71,6 +71,7 @@ jobs:
           cat DESCRIPTION
           echo "github.event_name: ${{ github.event_name }}"
           echo "github.event_name != 'workflow_dispatch': ${{ github.event_name != 'workflow_dispatch' }}" 
+          echo "NEED_TEX: $NEED_TEX"
 
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
@@ -88,7 +89,7 @@ jobs:
           needs: check
 
       - name: Install TinyTex
-        if: env.NEED_TEX
+        if: env.NEED_TEX == 'true'
         uses: r-lib/actions/setup-tinytex@v2
 
       - name: Install extra LaTeX packages
