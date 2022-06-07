@@ -69,6 +69,8 @@ jobs:
       - name: Read
         run: |
           cat DESCRIPTION
+          echo "github.event_name: ${{ github.event_name }}"
+          echo "github.event_name != 'workflow_dispatch': ${{ github.event_name != 'workflow_dispatch' }}" 
 
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
