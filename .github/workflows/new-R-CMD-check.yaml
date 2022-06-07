@@ -1,5 +1,12 @@
-# Workflow derived from https://github.com/r-lib/actions/tree/v2/examples
-# Need help debugging build failures? Start at https://github.com/r-lib/actions#where-to-find-help
+# This code is based on https://github.com/r-lib/actions/blob/v2.2.2/examples/check-standard.yaml
+#
+# The main differences are:
+# 1. This is a "call-only" workflow.  Details of when to run it are left to the caller.
+# 2. All the steps have been given names.
+# 3. Steps have been added to (conditionally) install LaTeX and needed LaTeX packages.
+# 4. A step has been added to compute what argument values to pass to the "check-r-package" action.
+# 5. [error-on?]
+
 on:
   workflow_call:
     inputs:
@@ -17,7 +24,7 @@ on:
 name: R-CMD-check-revised
 
 env:
-  NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
+  NEED_TEX: ${{ inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
 
 jobs:
 
