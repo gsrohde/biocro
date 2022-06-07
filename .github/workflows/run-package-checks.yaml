@@ -54,7 +54,7 @@ jobs:
           # strategy matrix.  See https://jmespath.org/.
           filter:
             '[?configName == `${{ github.event.inputs.platform-to-check }}`
-                || `${{ github.event_name }} != \'workflow_dispatch\']'
+                || `${{ github.event_name }} != "workflow_dispatch"]'
 
   # For debugging:
   display_matrix:
