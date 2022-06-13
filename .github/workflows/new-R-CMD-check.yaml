@@ -24,7 +24,7 @@ on:
 name: R-CMD-check-revised
 
 env:
-  NEED_TEX: ${{ inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
+  NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
 
 jobs:
 
