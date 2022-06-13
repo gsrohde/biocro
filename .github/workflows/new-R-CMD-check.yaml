@@ -46,7 +46,7 @@ jobs:
           echo run-tests ${{ inputs.run-tests }}
           echo check-examples ${{ inputs.check-examples }}
           echo check-vignettes ${{ inputs.check-vignettes }}
-        if inputs.debug
+        if:inputs.debug
 
   Show-current-strategy-matrix-values:
     runs-on: ubuntu-latest
@@ -57,7 +57,7 @@ jobs:
       - run: |
           echo os ${{ matrix.os }}
           echo R version ${{ matrix.r }}
-        if inputs.debug
+        if:inputs.debug
 
   R-CMD-check:
     name: Check R package on ${{ matrix.os }} using R version ${{ matrix.r }}
@@ -78,7 +78,7 @@ jobs:
 
       # REMOVE THIS LATER!!!
       - name: Read
-        if inputs.debug
+        if:inputs.debug
         run: |
           cat DESCRIPTION
           echo "github.event_name: ${{ github.event_name }}"
@@ -105,7 +105,7 @@ jobs:
         uses: r-lib/actions/setup-tinytex@v2
 
       - name: debug 1
-        if inputs.debug
+        if:inputs.debug
         run: |
           echo "inputs.check-vignettes: ${{ inputs.check-vignettes }}"
           echo "inputs.check-vignettes == true: ${{ inputs.check-vignettes == true }}"
