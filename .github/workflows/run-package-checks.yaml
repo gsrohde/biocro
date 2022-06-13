@@ -74,8 +74,12 @@ jobs:
     #uses: ./.github/workflows/print-inputs.yaml
     with:
       strategy-matrix: ${{ needs.matrix_prep.outputs.matrix }}
-      check-manual: ${{ github.event.inputs.check-manual }}
-      run-tests: ${{ github.event.inputs.run-tests }}
-      check-examples: ${{ github.event.inputs.check-examples }}
-      check-vignettes: ${{ github.event.inputs.check-vignettes }}
+      
+      # Note: Non-manual dispatches automatically run the tests and
+      # check the manual, examples, and vignettes!  Note that the inputs will be strings! (either 'true' or 'false') so we have to use the "== 'true'" clause to convert the value to a bona fide boolean.
+
+      check-manual: ${{ github.event.inputs.check-manual || github.event_name != 'workflow_dispatch' }}
+      run-tests: ${{ github.event.inputs.run-tests || github.event_name != 'workflow_dispatch' }}
+      check-examples: ${{ github.event.inputs.check-examples || github.event_name != 'workflow_dispatch' }}
+      check-vignettes: ${{ github.event.inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
 

@@ -13,18 +13,27 @@ on:
       strategy-matrix:
         type: string
       check-manual:
-        type: string
+        type: boolean
       run-tests:
-        type: string
+        type: boolean
       check-examples:
-        type: string
+        type: boolean
       check-vignettes:
-        type: string
+        type: boolean
+      debug:
+        type: boolean
+        default: true
 
 name: R-CMD-check-revised
 
 env:
-  NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
+
+  # LaTeX is need for both the manual and the vignettes.  Only the
+  # vignettes need the extra LaTeX packages.  Non-manual runs
+  # automatically build both.
+  
+  NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
+  NEED_TEX_EXTRAS: ${{ inputs.check-vignettes }}
 
 jobs:
 
@@ -37,6 +46,7 @@ jobs:
           echo run-tests ${{ inputs.run-tests }}
           echo check-examples ${{ inputs.check-examples }}
           echo check-vignettes ${{ inputs.check-vignettes }}
+        if inputs.debug
 
   Show-current-strategy-matrix-values:
     runs-on: ubuntu-latest
@@ -47,6 +57,7 @@ jobs:
       - run: |
           echo os ${{ matrix.os }}
           echo R version ${{ matrix.r }}
+        if inputs.debug
 
   R-CMD-check:
     name: Check R package on ${{ matrix.os }} using R version ${{ matrix.r }}
@@ -67,11 +78,12 @@ jobs:
 
       # REMOVE THIS LATER!!!
       - name: Read
+        if inputs.debug
         run: |
           cat DESCRIPTION
           echo "github.event_name: ${{ github.event_name }}"
-          echo "github.event_name != 'workflow_dispatch': ${{ github.event_name != 'workflow_dispatch' }}" 
           echo "NEED_TEX: $NEED_TEX"
+          echo "NEED_TEX_EXTRAS: $NEED_TEX_EXTRAS"
 
       - name: Install Pandoc
         uses: r-lib/actions/setup-pandoc@v2
@@ -93,6 +105,7 @@ jobs:
         uses: r-lib/actions/setup-tinytex@v2
 
       - name: debug 1
+        if inputs.debug
         run: |
           echo "inputs.check-vignettes: ${{ inputs.check-vignettes }}"
           echo "inputs.check-vignettes == true: ${{ inputs.check-vignettes == true }}"
@@ -131,7 +144,7 @@ jobs:
           echo "debug 7 ran"
 
       - name: Install extra LaTeX packages
-        if: inputs.check-vignettes
+        if: env.NEED_TEX_EXTRAS == 'true'
         run: |
 
           # Install the tinytex R package to run tinytex::pdflatex.
