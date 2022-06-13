@@ -2,32 +2,27 @@
     {
         "configName": "R 3.5 on Windows",
         "os": "windows-latest",
-        "r": "3.5",
-        "runOnEvent": ["pull_request"]
+        "r": "3.5"
     },
     {
         "configName": "R 3.5 on macOS",
         "os": "macOS-latest",
-        "r": "3.5",
-        "runOnEvent": []
+        "r": "3.5"
     },
     {
         "configName": "R 3.5 on Ubuntu",
         "os": "ubuntu-20.04",
-        "r": "3.5",
-        "runOnEvent": ["pull_request","push"]
+        "r": "3.5"
     },
     {
         "configName": "R release version on Ubuntu",
         "os": "ubuntu-20.04",
-        "r": "release",
-        "runOnEvent": ["pull_request","push"]
+        "r": "release"
     },
     {
         "configName": "R devel version on Ubuntu",
         "os": "ubuntu-20.04",
         "r": "devel",
-        "http-user-agent": "release",
-        "runOnEvent": ["pull_request","push"]
+        "http-user-agent": "release"
     }
 ]

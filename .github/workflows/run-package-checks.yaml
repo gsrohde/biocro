@@ -51,7 +51,11 @@ jobs:
           inputFile: '.github/workflows/strategy_matrix.json'
 
           # This filter uses the JMESPath query language to modify the
-          # strategy matrix.  See https://jmespath.org/.
+          # strategy matrix (see https://jmespath.org/).  Note that if
+          # the event is anything other than 'workflow_dispatch', the
+          # filter condition is always true and nothing gets filtered
+          # out: all the configurations are run.
+
           filter:
             '[?configName == `${{ github.event.inputs.platform-to-check }}`
                 || `${{ github.event_name }}` != ''workflow_dispatch'']'
