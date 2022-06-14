@@ -22,6 +22,10 @@ on:
         description: 'Check the examples'
         type: boolean
         default: true
+      debug:
+        description: 'Show output for debugging'
+        type: boolean
+        default: false
 
       # Which platform should we test?
       platform-to-check:
@@ -86,4 +90,6 @@ jobs:
       run-tests: ${{ github.event.inputs.run-tests || github.event_name != 'workflow_dispatch' }}
       check-examples: ${{ github.event.inputs.check-examples || github.event_name != 'workflow_dispatch' }}
       check-vignettes: ${{ github.event.inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
+
+      debug: ${{ github.event.inputs.debug || github.event_name != 'workflow_dispatch' }}
 

@@ -22,7 +22,6 @@ on:
         type: boolean
       debug:
         type: boolean
-        default: true
 
 name: R-CMD-check-revised
 
