@@ -35,6 +35,10 @@ env:
   NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
   NEED_TEX_EXTRAS: ${{ inputs.check-vignettes }}
 
+  # REMOVE THESE!:
+  ARGS: 'a string with a "quoted" word'
+  BUILD_ARGS: "another string with a 'quoted' word"
+
 jobs:
 
   Echo-inputs:
