@@ -245,8 +245,8 @@ jobs:
       - name: ERASE THIS Compute check args
         if: runner.os == 'Windows'
         run: |
-          echo ("ARGS=\'c(\\\"hi\\\")\'") >> $env:GITHUB_ENV        
-          echo ("BUILD_ARGS=\'c(\\\"lo\\\")\'") >> $env:GITHUB_ENV        
+          echo ("ARGS=\'c()\'") >> $env:GITHUB_ENV        
+          echo ("BUILD_ARGS=\'c()\'") >> $env:GITHUB_ENV        
 
       - name: Check check-r-package arg values (Windows)
         if: inputs.debug && runner.os == 'Windows'
