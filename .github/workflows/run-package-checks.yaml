@@ -91,5 +91,5 @@ jobs:
       check-examples: ${{ github.event.inputs.check-examples || github.event_name != 'workflow_dispatch' }}
       check-vignettes: ${{ github.event.inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
 
-      debug: ${{ github.event.inputs.debug || github.event_name != 'workflow_dispatch' }}
+      debug: ${{ github.event.inputs.debug == 'true' || github.event_name != 'workflow_dispatch' }}
 
