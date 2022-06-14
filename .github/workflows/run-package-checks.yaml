@@ -86,10 +86,10 @@ jobs:
       # Note: Non-manual dispatches automatically run the tests and
       # check the manual, examples, and vignettes!  Note that the inputs will be strings! (either 'true' or 'false') so we have to use the "== 'true'" clause to convert the value to a bona fide boolean.
 
-      check-manual: ${{ github.event.inputs.check-manual || github.event_name != 'workflow_dispatch' }}
-      run-tests: ${{ github.event.inputs.run-tests || github.event_name != 'workflow_dispatch' }}
-      check-examples: ${{ github.event.inputs.check-examples || github.event_name != 'workflow_dispatch' }}
-      check-vignettes: ${{ github.event.inputs.check-vignettes || github.event_name != 'workflow_dispatch' }}
+      check-manual: ${{ github.event.inputs.check-manual == 'true' || github.event_name != 'workflow_dispatch' }}
+      run-tests: ${{ github.event.inputs.run-tests == 'true' || github.event_name != 'workflow_dispatch' }}
+      check-examples: ${{ github.event.inputs.check-examples == 'true' || github.event_name != 'workflow_dispatch' }}
+      check-vignettes: ${{ github.event.inputs.check-vignettes == 'true' || github.event_name != 'workflow_dispatch' }}
 
       debug: ${{ github.event.inputs.debug == 'true' || github.event_name != 'workflow_dispatch' }}
 
