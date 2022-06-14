@@ -238,8 +238,8 @@ jobs:
           args <- paste0('c(\\\"', paste(args_value, collapse = '\\\", \\\"'), '\\\")')
 
           # store these in the environment
-          system(sprintf('echo "BUILD_ARGS=\'%s\'" >> $env:GITHUB_ENV', build_args))
-          system(sprintf('echo "ARGS=\'%s\'" >> $env:GITHUB_ENV', args))
+          system(sprintf('echo ("BUILD_ARGS=\'%s\'") >> $env:GITHUB_ENV', build_args))
+          system(sprintf('echo ("ARGS=\'%s\'") >> $env:GITHUB_ENV', args))
         shell: Rscript {0}
 
       - name: Check check-r-package arg values (Windows)
