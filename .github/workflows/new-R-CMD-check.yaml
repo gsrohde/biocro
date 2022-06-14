@@ -248,6 +248,12 @@ jobs:
           echo ("ARGS=\'c()\'") >> $env:GITHUB_ENV        
           echo ("BUILD_ARGS=\'c()\'") >> $env:GITHUB_ENV        
 
+      - name: ERASE THIS Compute check args with R
+        if: runner.os == 'Windows'
+          system('echo ("BUILD_ARGS=\'high\'") >> $env:GITHUB_ENV')
+          system('echo ("ARGS=\'low\'") >> $env:GITHUB_ENV')
+        shell: Rscript {0}
+
       - name: Check check-r-package arg values (Windows)
         if: inputs.debug && runner.os == 'Windows'
         run: |
