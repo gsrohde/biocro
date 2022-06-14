@@ -71,18 +71,18 @@ jobs:
         run: |
           build_args_value <- c()
           args_value <- c('--as-cran')
-          if ('${{ needs.get_configuration.outputs.check-manual }}' == 'false') {
+          if (${{ !needs.get_configuration.outputs.check-manual }}) {
             build_args_value <- append(build_args_value, '--no-manual')
             args_value <- append(args_value, '--no-manual')
           }
-          if ('${{ needs.get_configuration.outputs.check-vignettes }}' == 'false') {
+          if (${{ !needs.get_configuration.outputs.check-vignettes }}) {
             build_args_value <- append(build_args_value, '--no-build-vignettes')
             args_value <- append(args_value, '--ignore-vignettes')
           }
-          if ('${{ needs.get_configuration.outputs.run-tests }}' == 'false') {
+          if (${{ !needs.get_configuration.outputs.run-tests }}) {
             args_value <- append(args_value, '--no-tests')
           }
-          if ('${{ needs.get_configuration.outputs.check-examples }}' == 'false') {
+          if (${{ !needs.get_configuration.outputs.check-examples }}) {
             args_value <- append(args_value, '--no-examples')
           }
 
