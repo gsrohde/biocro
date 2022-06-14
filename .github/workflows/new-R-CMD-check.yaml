@@ -208,8 +208,18 @@ jobs:
           system(sprintf('echo "ARGS=\'%s\'" >> $GITHUB_ENV', args))
         shell: Rscript {0}
 
-      - name: Check check-r-package arg values
-        if: inputs.debug
+      - name: Check check-r-package arg values (Windows)
+        if: inputs.debug && runner.os == 'Windows'
+        run: |
+          echo "ARGS = $env:ARGS"
+          echo "BUILD_ARGS = $env:BUILD_ARGS"
+          echo "ARGS = ${{ env.ARGS }}"
+          echo "BUILD_ARGS = ${{ env.BUILD_ARGS }}"
+          echo ${{ env.ARGS }}
+          echo ${{ env.BUILD_ARGS }}
+
+      - name: Check check-r-package arg values (non-Windows)
+        if: inputs.debug && runner.os != 'Windows'
         run: |
           echo "ARGS = $ARGS"
           echo "BUILD_ARGS = $BUILD_ARGS"
