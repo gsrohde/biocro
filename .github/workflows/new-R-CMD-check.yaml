@@ -197,7 +197,7 @@ jobs:
 
           # serialize these vectors as strings:
           build_args <- paste0('c("', paste(build_args_value, collapse = '", "'), '")')
-          args <- paste0("c('", paste(args_value, collapse = "', '"), "')")
+          args <- paste0('c("', paste(args_value, collapse = '", "'), '")')
 
           # store these in the environment
           system(sprintf('echo "BUILD_ARGS=\'%s\'" >> $GITHUB_ENV', build_args))
