@@ -181,6 +181,7 @@ jobs:
         shell: Rscript {0}
 
       - name: Compute check args
+        if: runner.os != 'Windows'
         run: |
           build_args_value <- c()
           args_value <- c('--as-cran')
@@ -206,6 +207,35 @@ jobs:
           # store these in the environment
           system(sprintf('echo "BUILD_ARGS=\'%s\'" >> $GITHUB_ENV', build_args))
           system(sprintf('echo "ARGS=\'%s\'" >> $GITHUB_ENV', args))
+        shell: Rscript {0}
+
+      - name: Compute check args
+        if: runner.os == 'Windows'
+        run: |
+          build_args_value <- c()
+          args_value <- c('--as-cran')
+          if ('${{ needs.get_configuration.outputs.check-manual }}' == 'false') {
+            build_args_value <- append(build_args_value, '--no-manual')
+            args_value <- append(args_value, '--no-manual')
+          }
+          if ('${{ needs.get_configuration.outputs.check-vignettes }}' == 'false') {
+            build_args_value <- append(build_args_value, '--no-build-vignettes')
+            args_value <- append(args_value, '--ignore-vignettes')
+          }
+          if ('${{ needs.get_configuration.outputs.run-tests }}' == 'false') {
+            args_value <- append(args_value, '--no-tests')
+          }
+          if ('${{ needs.get_configuration.outputs.check-examples }}' == 'false') {
+            args_value <- append(args_value, '--no-examples')
+          }
+
+          # serialize these vectors as strings:
+          build_args <- paste0('c(\\\"', paste(build_args_value, collapse = '\\\", \\\"'), '\\\")')
+          args <- paste0('c(\\\"', paste(args_value, collapse = '\\\", \\\"'), '\\\")')
+
+          # store these in the environment
+          system(sprintf('echo "BUILD_ARGS=\'%s\'" >> $env:GITHUB_ENV', build_args))
+          system(sprintf('echo "ARGS=\'%s\'" >> $env:GITHUB_ENV', args))
         shell: Rscript {0}
 
       - name: Check check-r-package arg values (Windows)
