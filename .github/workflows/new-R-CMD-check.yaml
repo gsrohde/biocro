@@ -35,10 +35,6 @@ env:
   NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
   NEED_TEX_EXTRAS: ${{ inputs.check-vignettes }}
 
-  # REMOVE THESE!:
-  ARGS: 'a string with a "quoted" word'
-  BUILD_ARGS: "another string with a 'quoted' word"
-
 jobs:
 
   Echo-inputs:
@@ -185,7 +181,6 @@ jobs:
         shell: Rscript {0}
 
       - name: Compute check args
-        if: runner.os != 'Windows'
         run: |
           build_args_value <- c()
           args_value <- c('--as-cran')
@@ -213,60 +208,8 @@ jobs:
           system(sprintf('echo "ARGS=\'%s\'" >> $GITHUB_ENV', args))
         shell: Rscript {0}
 
-      - name: Compute check args
-        if: runner.os == 'Windows'
-        run: |
-          build_args_value <- c()
-          args_value <- c('--as-cran')
-          if ('${{ needs.get_configuration.outputs.check-manual }}' == 'false') {
-            build_args_value <- append(build_args_value, '--no-manual')
-            args_value <- append(args_value, '--no-manual')
-          }
-          if ('${{ needs.get_configuration.outputs.check-vignettes }}' == 'false') {
-            build_args_value <- append(build_args_value, '--no-build-vignettes')
-            args_value <- append(args_value, '--ignore-vignettes')
-          }
-          if ('${{ needs.get_configuration.outputs.run-tests }}' == 'false') {
-            args_value <- append(args_value, '--no-tests')
-          }
-          if ('${{ needs.get_configuration.outputs.check-examples }}' == 'false') {
-            args_value <- append(args_value, '--no-examples')
-          }
-
-          # serialize these vectors as strings:
-          build_args <- paste0('c(\\\"', paste(build_args_value, collapse = '\\\", \\\"'), '\\\")')
-          args <- paste0('c(\\\"', paste(args_value, collapse = '\\\", \\\"'), '\\\")')
-
-          # store these in the environment
-          system(sprintf('echo ("BUILD_ARGS=\'%s\'") >> $env:GITHUB_ENV', build_args))
-          system(sprintf('echo ("ARGS=\'%s\'") >> $env:GITHUB_ENV', args))
-        shell: Rscript {0}
-
-      - name: ERASE THIS Compute check args
-        if: runner.os == 'Windows'
-        run: |
-          echo ("ARGS=\'c()\'") >> $env:GITHUB_ENV        
-          echo ("BUILD_ARGS=\'c()\'") >> $env:GITHUB_ENV        
-
-      - name: ERASE THIS Compute check args with R
-        if: runner.os == 'Windows'
-        run: |
-          system('echo ("BUILD_ARGS=\'high\'") >> $env:GITHUB_ENV')
-          system('echo ("ARGS=\'low\'") >> $env:GITHUB_ENV')
-        shell: Rscript {0}
-
-      - name: Check check-r-package arg values (Windows)
-        if: inputs.debug && runner.os == 'Windows'
-        run: |
-          echo "ARGS = $env:ARGS"
-          echo "BUILD_ARGS = $env:BUILD_ARGS"
-          echo "ARGS = ${{ env.ARGS }}"
-          echo "BUILD_ARGS = ${{ env.BUILD_ARGS }}"
-          echo ${{ env.ARGS }}
-          echo ${{ env.BUILD_ARGS }}
-
-      - name: Check check-r-package arg values (non-Windows)
-        if: inputs.debug && runner.os != 'Windows'
+      - name: Check check-r-package arg values
+        if: inputs.debug
         run: |
           echo "ARGS = $ARGS"
           echo "BUILD_ARGS = $BUILD_ARGS"
