@@ -204,7 +204,16 @@ jobs:
           system(sprintf('echo "ARGS=\'%s\'" >> $GITHUB_ENV', args))
         shell: Rscript {0}
 
+      - name: Check check-r-package arg values
+        if: inputs.debug
+        run: |
+          echo "ARGS = $ARGS"
+          echo "BUILD_ARGS = $BUILD_ARGS"
+          echo "ARGS = ${{ env.ARGS }}"
+          echo "BUILD_ARGS = ${{ env.BUILD_ARGS }}"
+
       - name: Check package
+        if: !inputs.debug
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
