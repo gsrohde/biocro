@@ -213,7 +213,7 @@ jobs:
           echo "BUILD_ARGS = ${{ env.BUILD_ARGS }}"
 
       - name: Check package
-        if: !inputs.debug
+        if: ${{ !inputs.debug }}
         uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
