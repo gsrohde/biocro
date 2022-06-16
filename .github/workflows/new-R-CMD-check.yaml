@@ -184,8 +184,8 @@ jobs:
         run: |
           echo "args = ${{ needs.compute-check-args.outputs.args }}"
           echo "build_args = ${{ needs.compute-check-args.outputs.build_args }}"
-          #echo ${{ needs.compute-check-args.outputs.args }}
-          #echo ${{ needs.compute-check-args.outputs.build_args }}
+          echo '${{ needs.compute-check-args.outputs.args }}'
+          echo '${{ needs.compute-check-args.outputs.build_args }}'
 
       - name: Check package
         if: ${{ !inputs.debug }}
