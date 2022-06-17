@@ -184,10 +184,13 @@ jobs:
         run: |
           echo "args = ${{ needs.compute-check-args.outputs.args }}"
           echo "build_args = ${{ needs.compute-check-args.outputs.build_args }}"
+          echo "::debug::before single quotes"
           echo '${{ needs.compute-check-args.outputs.args }}'
           echo '${{ needs.compute-check-args.outputs.build_args }}'
-          echo "::debug::${{ needs.compute-check-args.outputs.args }}"
-          echo "::debug::${{ needs.compute-check-args.outputs.build_args }}"
+          echo "::debug::after single quotes"
+          echo "::debug::${{ format('[debug] args: {0}', needs.compute-check-args.outputs.args) }}"
+          echo "::debug::${{ format('[debug] build_args: {0}', needs.compute-check-args.outputs.build_args) }}"
+          echo "::debug::done"
       - name: Check package
         if: ${{ !inputs.debug }}
         uses: r-lib/actions/check-r-package@v2
