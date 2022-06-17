@@ -90,6 +90,10 @@ jobs:
           build_args <- paste0('c(\\\"', paste(build_args_value, collapse = '\\\", \\\"'), '\\\")')
           args <- paste0('c(\\\"', paste(args_value, collapse = '\\\", \\\"'), '\\\")')
           print(sprintf("args = %s; build_args = %s", args, build_args)) # <-- REMOVE THIS!
+          cat(sprintf("args = %s; build_args = %s\n", args, build_args)) # <-- REMOVE THIS!
+          cat("printing strings sent to 'system':\n")
+          cat(sprintf('echo "::set-output name=build_args::%s"', build_args)); cat("\n")
+          cat(sprintf('echo "::set-output name=args::%s"', args)); cat("\n")
           # store these in the environment
           system(sprintf('echo "::set-output name=build_args::%s"', build_args))
           system(sprintf('echo "::set-output name=args::%s"', args))
