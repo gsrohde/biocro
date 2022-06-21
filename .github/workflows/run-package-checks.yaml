@@ -22,6 +22,10 @@ on:
         description: 'Check the examples'
         type: boolean
         default: true
+
+      # Should we show debug output?  (This will also skip doing the
+      # actual package check and the lengthy steps involved in doing
+      # such a check.)
       debug:
         description: 'Show output for debugging'
         type: boolean
@@ -47,9 +51,11 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
-      - uses: actions/checkout@v2
+      - name: Check out the repository
+        uses: actions/checkout@v2
+
       - id: set-matrix
-        name: Conditional Build Matrix
+        name: Construct the strategy matrix
         uses: JoshuaTheMiller/conditional-build-matrix@38b0036b90a7f5f1461f446948d156a714e4fa1e # release 0.0.1
         with:
           inputFile: '.github/workflows/strategy_matrix.json'
@@ -94,7 +100,8 @@ jobs:
 
   # For debugging:
   display_matrix:
-    name: Display strategy matrix
+    name: "DEBUG: Display strategy matrix"
+    if: github.event.inputs.debug == 'true'
     needs: matrix_prep # Supplies matrix output.
     runs-on: ubuntu-latest
     steps:
@@ -103,18 +110,18 @@ jobs:
         MATRIX_CONTEXT: ${{ needs.matrix_prep.outputs.matrix }}
       run: |
         echo "matrix: $MATRIX_CONTEXT"
+        echo "direct: ${{ needs.matrix_prep.outputs.matrix }}"
 
   call-R-CMD-check:
     uses: ./.github/workflows/new-R-CMD-check.yaml
     needs: matrix_prep
-    #uses: ./.github/workflows/print-inputs.yaml
     with:
       strategy-matrix: ${{ needs.matrix_prep.outputs.matrix }}
       
       # Note: Non-manual dispatches automatically run the tests and
       # check the manual, examples, and vignettes!  Note that the
       # github.event inputs will be strings (either 'true' or 'false')
-      # so we have to use the "== 'true'" clause to convert the value
+      # so we have to use the "== 'true'" clause to convert each value
       # to a bona fide boolean!
 
       check-manual:

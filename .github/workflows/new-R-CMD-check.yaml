@@ -1,10 +1,26 @@
 # This code is based on https://github.com/r-lib/actions/blob/v2.2.2/examples/check-standard.yaml
 #
 # The main differences are:
-# 1. This is a "call-only" workflow.  Details of when to run it are left to the caller.
-# 2. All the steps have been given names.
-# 3. Steps have been added to (conditionally) install LaTeX and needed LaTeX packages.
-# 4. A step has been added to compute what argument values to pass to the "check-r-package" action.
+
+# 1. This is a "call-only" workflow.  Details of when and how to run
+#    it are left to the caller.
+
+# 2. A job has been added to compute what argument values to pass to
+#    the "check-r-package" action based on the inputs specified by
+#    this workflow's caller.
+
+# 3. The strategy matrix comes from a workflow input instead of being
+#    hard-coded in the workflow.
+
+# 4. All the steps in the R-CMD-check job have been given names.
+
+# 5. Steps have been added to (conditionally) install LaTeX and needed
+#    LaTeX packages.
+
+# 6. Jobs and steps to aid in debugging the workflow--in particular,
+#    the processing of inputs--have been added.
+
+name: R-CMD-check-revised
 
 on:
   workflow_call:
@@ -22,21 +38,19 @@ on:
       debug:
         type: boolean
 
-name: R-CMD-check-revised
-
 env:
 
   # LaTeX is need for both the manual and the vignettes.  Only the
-  # vignettes need the extra LaTeX packages.  Non-manual runs
-  # automatically build both.
-  
+  # vignettes need the extra LaTeX packages.
+
   NEED_TEX: ${{ inputs.check-manual || inputs.check-vignettes }}
   NEED_TEX_EXTRAS: ${{ inputs.check-vignettes }}
 
 jobs:
 
+  # For debugging
   echo-inputs:
-    name: Echo inputs
+    name: "DEBUG: Echo inputs"
     if: inputs.debug
     runs-on: ubuntu-latest
     steps:
@@ -47,20 +61,8 @@ jobs:
           echo check-examples ${{ inputs.check-examples }}
           echo check-vignettes ${{ inputs.check-vignettes }}
 
-  show-current-strategy-matrix-values:
-    name: Show current values from strategy matrix
-    if: inputs.debug
-    runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix: ${{ fromJSON(inputs.strategy-matrix) }}
-    steps:
-      - run: |
-          echo os ${{ matrix.os }}
-          echo R version ${{ matrix.r }}
-
   compute-check-args:
-    name: Compute check args
+    name: 'Compute "R CMD check" args'
     runs-on: ubuntu-latest
     outputs:
       build_args: ${{ steps.compute-args.outputs.build_args }}
@@ -128,12 +130,21 @@ jobs:
       R_KEEP_PKG_SOURCE: yes
 
     steps:
+
+      # For debugging
+      - name: "DEBUG: Show current values from the strategy matrix"
+        if: inputs.debug
+        run: |
+          echo os ${{ matrix.os }}
+          echo R version ${{ matrix.r }}
+          echo HTTP user agent ${{ matrix.http-user-agent }}
+
       - name: Check out repository
         if: ${{ !inputs.debug }}
         uses: actions/checkout@v2
 
-      # REMOVE THIS LATER!!!
-      - name: Read
+      # For debugging
+      - name: "DEBUG: Print environment variables"
         if: inputs.debug
         run: |
           echo "github.event_name: ${{ github.event_name }}"
@@ -196,11 +207,13 @@ jobs:
 
         shell: Rscript {0}
 
-      - name: Check check-r-package arg values
+      # For debugging
+      - name: "DEBUG: Show check-r-package arg values"
         if: inputs.debug
         run: |
           echo 'args = ${{ needs.compute-check-args.outputs.args }}'
           echo 'build_args = ${{ needs.compute-check-args.outputs.build_args }}'
+
       - name: Check package
         if: ${{ !inputs.debug }}
         uses: r-lib/actions/check-r-package@v2
