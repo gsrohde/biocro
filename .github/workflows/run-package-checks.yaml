@@ -101,7 +101,7 @@ jobs:
   # For debugging:
   display_matrix:
     name: "DEBUG: Display strategy matrix"
-    if: github.event.inputs.debug == 'true'
+    if: github.event.inputs.debug == 'true' || github.event_name != 'workflow_dispatch'
     needs: matrix_prep # Supplies matrix output.
     runs-on: ubuntu-latest
     steps:
@@ -110,7 +110,8 @@ jobs:
         MATRIX_CONTEXT: ${{ needs.matrix_prep.outputs.matrix }}
       run: |
         echo "matrix: $MATRIX_CONTEXT"
-        echo "direct: ${{ needs.matrix_prep.outputs.matrix }}"
+        echo 'matrix: $MATRIX_CONTEXT'
+        echo 'direct: ${{ needs.matrix_prep.outputs.matrix }}'
 
   call-R-CMD-check:
     uses: ./.github/workflows/new-R-CMD-check.yaml
