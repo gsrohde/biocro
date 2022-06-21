@@ -117,20 +117,20 @@ jobs:
       # so we have to use the "== 'true'" clause to convert the value
       # to a bona fide boolean!
 
-      check-manual: >
-        ${{ github.event.inputs.check-manual == 'true'
-            || github.event_name != 'workflow_dispatch' }}
-      run-tests: >
-        ${{ github.event.inputs.run-tests == 'true'
-            || github.event_name != 'workflow_dispatch' }}
-      check-examples: >
-        ${{ github.event.inputs.check-examples == 'true'
-            || github.event_name != 'workflow_dispatch' }}
-      check-vignettes: >
-        ${{ github.event.inputs.check-vignettes == 'true'
-            || github.event_name != 'workflow_dispatch' }}
+      check-manual:
+        "${{ github.event.inputs.check-manual == 'true'
+            || github.event_name != 'workflow_dispatch' }}"
+      run-tests:
+        "${{ github.event.inputs.run-tests == 'true'
+            || github.event_name != 'workflow_dispatch' }}"
+      check-examples:
+        "${{ github.event.inputs.check-examples == 'true'
+            || github.event_name != 'workflow_dispatch' }}"
+      check-vignettes:
+        "${{ github.event.inputs.check-vignettes == 'true'
+            || github.event_name != 'workflow_dispatch' }}"
 
-      debug: >
-        ${{ github.event.inputs.debug == 'true'
-            || github.event_name != 'workflow_dispatch' }}
+      debug:
+        "${{ github.event.inputs.debug == 'true'
+            || github.event_name != 'workflow_dispatch' }}"
 
