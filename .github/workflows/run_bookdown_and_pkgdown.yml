@@ -4,12 +4,11 @@
 name: Generate pkgdown and bookdown documentation
 
 on:
-  push:
   workflow_dispatch:
     # [no inputs]
 
 env:
-  publish-to: "ebimodeling/biocro-documentation"
+  publish-to: "gsrohde/biocro-documentation"
 
 jobs:
   build:

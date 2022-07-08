@@ -4,25 +4,11 @@
 name: Update Documentation
 
 on:
-  push:
-    paths:
-    # Include all possible Doxygen source files ...
-    - 'src/**.cpp'
-    - 'src/**.hpp'
-    - 'src/**.h'
-    - 'src/**.dox'
-    - 'src/**.md'
-    - 'src/**.markdown'
-    - 'doxygen/markdown/*.md'
-    # ... plus files administering the workflow ...
-    - '.github/**'
-    - 'doxygen/Makefile'
-    - 'doxygen/Doxyfile'
   workflow_dispatch:
     # [no inputs]
 
 env:
-  publish-to: "ebimodeling/biocro-documentation"
+  publish-to: "gsrohde/biocro-documentation"
 
   # The version directory names are hard-coded into the Make file and
   # are determined by the Make target.  An exception to this is
