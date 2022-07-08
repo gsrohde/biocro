@@ -41,7 +41,7 @@ jobs:
 
     - name: 5. Install pkgdown
       run: |
-        install.packages(c("pkgdown"), type = "binary")
+        install.packages(c("pkgdown"))
       shell: Rscript {0}
 
     - name: 6. Install TinyTex
