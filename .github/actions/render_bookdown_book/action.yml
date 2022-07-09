@@ -1,7 +1,7 @@
 name: 'Render Bookdown Book'
 description: ''
 inputs:
-  repository-root
+  repository-root:
     description: 'The root of the repository containing the bookdown source files'
     required: true
 runs:
