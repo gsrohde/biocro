@@ -1,0 +1,23 @@
+name: 'Render Bookdown Book'
+description: ''
+inputs:
+  repository-root
+    description: 'The root of the repository containing the bookdown source files'
+    required: true
+runs:
+  using: "composite"
+  steps:
+
+    - name: Install Pandoc
+      uses: r-lib/actions/setup-pandoc@v1
+
+    - name: 8. Install bookdown
+      run: |
+        install.packages(c("bookdown"))
+      shell: Rscript {0}
+
+    - name: 9. Run bookdown
+      run: |
+        cd ${{ repository-root }}/documentation/script
+        ./run_bookdown.sh
+

@@ -36,40 +36,17 @@ jobs:
         remotes::install_deps(dependencies = TRUE)
       shell: Rscript {0}
 
-    - name: 4. Install Pandoc
-      uses: r-lib/actions/setup-pandoc@v1
+    - name: Build Bookdown book
+      if: true
+      uses: ./.github/actions/render_bookdown_book
+      with:
+        repository-root: source
 
-    - name: 5. Install pkgdown
-      run: |
-        install.packages(c("pkgdown"), type = "binary")
-      shell: Rscript {0}
-
-    - name: 6. Install TinyTex
-      run: |
-        install.packages('tinytex')
-        tinytex::install_tinytex()
-
-        # (tinytex::pdflatex, which is called by the
-        # pdf_vignette_index.Rmd vignette, will automatically install
-        # any additional needed LaTeX packages needed by the Rnw
-        # vignettes.)
-
-      shell: Rscript {0}
-
-    - name: 7. Run pkgdown
-      run: |
-        cd source/documentation/script
-        ./run_pkgdown.sh
-
-    - name: 8. Install bookdown
-      run: |
-        install.packages(c("bookdown"))
-      shell: Rscript {0}
-
-    - name: 9. Run bookdown
-      run: |
-        cd source/documentation/script
-        ./run_bookdown.sh
+    - name: Build pkgdown book
+      if: false
+      uses: ./.github/actions/build_pkgdown_site
+      with:
+        package_root: source
 
     # The "publish-to" repository is where the documentation will be
     # copied to and then checked in (to the default branch).

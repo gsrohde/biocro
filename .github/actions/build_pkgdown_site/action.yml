@@ -1,0 +1,32 @@
+name: 'Build pkgdown site'
+description: 'Builds a pkgdown site from the source files of the package at package_root'
+inputs:
+  package_root:
+    description: 'The root directory of the source tree of an R package'
+    required: true
+runs:
+  using: "composite"
+  steps:
+
+    - name: Install pkgdown
+      run: |
+        install.packages(c("pkgdown"), type = "binary")
+      shell: Rscript {0}
+
+    - name: Install TinyTex
+      run: |
+        install.packages('tinytex')
+        tinytex::install_tinytex()
+
+        # (tinytex::pdflatex, which is called by the
+        # pdf_vignette_index.Rmd vignette, will automatically install
+        # any additional needed LaTeX packages needed by the Rnw
+        # vignettes.)
+
+      shell: Rscript {0}
+
+    - name: Run pkgdown
+      run: |
+        cd ${{ inputs.package_root }}/documentation/script
+        ./run_pkgdown.sh
+
