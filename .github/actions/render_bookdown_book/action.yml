@@ -18,6 +18,6 @@ runs:
 
     - name: 9. Run bookdown
       run: |
-        cd ${{ repository-root }}/documentation/script
+        cd ${{ inputs.repository-root }}/documentation/script
         ./run_bookdown.sh
       shell: bash
