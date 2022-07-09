@@ -73,7 +73,7 @@ jobs:
         mkdir bookdown_book docs
 
         # Copy the respective documentation into them:
-        cp -R ../source/docs/. docs
+        cp -R ../source/docs/. docs || true
         cp -R ../source/bookdown/_book/. bookdown_book
 
     - name: 12. Commit updates and push to target (documentation) repository
