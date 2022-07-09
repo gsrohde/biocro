@@ -29,4 +29,4 @@ runs:
       run: |
         cd ${{ inputs.package_root }}/documentation/script
         ./run_pkgdown.sh
-
+      shell: bash
