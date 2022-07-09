@@ -20,4 +20,4 @@ runs:
       run: |
         cd ${{ repository-root }}/documentation/script
         ./run_bookdown.sh
-
+      shell: bash
