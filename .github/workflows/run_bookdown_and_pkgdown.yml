@@ -38,13 +38,13 @@ jobs:
 
     - name: Build Bookdown book
       if: true
-      uses: ./.github/actions/render_bookdown_book
+      uses: ./source/.github/actions/render_bookdown_book
       with:
         repository-root: source
 
     - name: Build pkgdown book
       if: false
-      uses: ./.github/actions/build_pkgdown_site
+      uses: ./source/.github/actions/build_pkgdown_site
       with:
         package_root: source
 
