@@ -12,7 +12,7 @@ runs:
       shell: bash
 
     - name: Install Pandoc
-      if failure()
+      if: failure()
       uses: r-lib/actions/setup-pandoc@v1
 
     - name: 8. Install bookdown
