@@ -12,7 +12,7 @@ navbar:
       href: about_pkgdown_documentation.html
     dev_manual:
       text: Developer's Manual
-      href: ../bookdown_book/index.html
+      href: ./bookdown_book/index.html
     articles:
       text: Articles
       menu:

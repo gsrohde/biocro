@@ -4,11 +4,29 @@
 name: Generate pkgdown and bookdown documentation
 
 on:
+  push:
+    branches:
+      - main
+
+    tags:
+      - '*'
+
+  pull_request:
+  
   workflow_dispatch:
-    # [no inputs]
+    inputs:
+      pkgdown-build:
+        description: Build the pkgdown site
+        type: boolean
+        default: true
+      bookdown-build:
+        description: Build the developer manual
+        type: boolean
+        default: true
 
 env:
   publish-to: "gsrohde/biocro-documentation"
+  VERSION: ${{ github.ref_name }}
 
 jobs:
   build:
@@ -37,13 +55,13 @@ jobs:
       shell: Rscript {0}
 
     - name: Build Bookdown book
-      if: true
+      if: inputs.bookdown-build
       uses: ./source/.github/actions/render_bookdown_book
       with:
         repository-root: source
 
     - name: Build pkgdown book
-      if: false
+      if: inputs.pkgdown-build
       uses: ./source/.github/actions/build_pkgdown_site
       with:
         package_root: source
@@ -64,17 +82,12 @@ jobs:
       run: |
         cd target
 
-        # Remove docs and bookdown_book directories if they exist; we
-        # are going to replace them:
-        git rm -r --ignore-unmatch docs
-        git rm -r --ignore-unmatch bookdown_book
-
-        # Recreate docs and bookdown_book directories:
-        mkdir bookdown_book docs
+        # (Re)create target documentation directory:
+        mkdir -p $VERSION
 
         # Copy the respective documentation into them:
-        cp -R ../source/docs/. docs || true
-        cp -R ../source/bookdown/_book/. bookdown_book
+        rsync -a --delete ../source/docs/ $VERSION || true
+        rsync -a --delete ../source/bookdown/_book/ $VERSION/bookdown_book || true
 
     - name: 12. Commit updates and push to target (documentation) repository
       run: |
