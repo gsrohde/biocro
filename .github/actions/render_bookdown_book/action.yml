@@ -10,6 +10,7 @@ runs:
     - name: Test for Pandoc
       run: pandoc --version
       shell: bash
+      continue-on-error: true
 
     - name: Install Pandoc
       if: failure()
