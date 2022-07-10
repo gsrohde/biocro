@@ -86,7 +86,7 @@ jobs:
         mkdir -p $VERSION
 
         # Copy the respective documentation into them:
-        rsync -a --delete ../source/docs/ $VERSION || true
+        rsync -a --delete --filter 'protect /$VERSION/bookdown_book' ../source/docs/ $VERSION || true
         rsync -a --delete ../source/bookdown/_book/ $VERSION/bookdown_book || true
 
     - name: 12. Commit updates and push to target (documentation) repository

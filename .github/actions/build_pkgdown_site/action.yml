@@ -30,3 +30,8 @@ runs:
         cd ${{ inputs.package_root }}/documentation/script
         ./run_pkgdown.sh
       shell: bash
+
+    - name: Build Bookdown book
+      uses: ./source/.github/actions/render_bookdown_book
+      with:
+        repository-root: ${{ inputs.package_root }}
