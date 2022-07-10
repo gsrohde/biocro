@@ -16,7 +16,7 @@ runs:
 
     - name: Install Pandoc
       if: always() && steps.pandoc-test.outcome == 'failure'
-      uses: r-lib/actions/setup-pandoc@v1
+      uses: r-lib/actions/setup-pandoc@v2
 
     - name: Install pkgdown
       run: |
