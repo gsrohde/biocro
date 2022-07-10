@@ -8,6 +8,14 @@ runs:
   using: "composite"
   steps:
 
+    - name: Test for Pandoc
+      run: pandoc --version
+      shell: bash
+
+    - name: Install Pandoc
+      if failure()
+      uses: r-lib/actions/setup-pandoc@v1
+
     - name: Install pkgdown
       run: |
         install.packages(c("pkgdown"), type = "binary")
