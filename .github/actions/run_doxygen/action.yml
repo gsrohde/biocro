@@ -5,16 +5,12 @@ inputs:
     description: 'The root directory of the source tree of an R package'
     required: true
 
-env:
-  PACKAGE_ROOT: ${{ inputs.package_root }}
-
 runs:
   using: "composite"
   steps:
 
   - name: debug
     run: |
-      echo $PACKAGE_ROOT
       echo ${{ inputs.package_root }}
       echo $GITHUB_WORKSPACE
     shell: bash
