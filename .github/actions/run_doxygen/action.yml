@@ -1,0 +1,60 @@
+name: Create All Doxygen Versions
+description: 'Generates four versions of the Doxygen documentation for BioCro package.'
+inputs:
+  package_root:
+    description: 'The root directory of the source tree of an R package'
+    required: true
+  
+runs:
+  using: "composite"
+  steps:
+
+  # The following four steps use the doxygen-actuib action defined in
+  # this repository to build four different versions of the Doxygen
+  # documentation:
+
+  - name: Doxygen Action for default
+    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    with:
+      # Working directory
+      working-directory: "${{ inputs.package_root }}/doxygen"
+      # Not generating the tree-view index makes source code browsing easier.
+      generate-treeview: NO
+      # Makefile target
+      makefile-target: "all-html"
+
+  - name: Doxygen Action for modules only
+    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    with:
+      # Working directory
+      working-directory: "${{ inputs.package_root }}/doxygen"
+      # Color
+      color: 53
+      # Makefile target
+      makefile-target: "module-docs-html"
+
+  - name: Doxygen Action for public members of modules only
+    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    with:
+      # Working directory
+      working-directory: "${{ inputs.package_root }}/doxygen"
+      # Color
+      color: 323
+      # Document private members
+      document-private: "NO"
+      # Extra setting: override default output directory
+      extra-settings: "module_docs_directory=doxygen_docs_modules_public_members_only"
+      # Makefile target
+      makefile-target: "module-docs-html"
+
+  - name: Doxygen Action for framework
+    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    with:
+      # Working directory
+      working-directory: "${{ inputs.package_root }}/doxygen"
+      # Color
+      color: 233
+      # Not generating the tree-view index makes source code browsing easier.
+      generate-treeview: NO
+      # Makefile target
+      makefile-target: "framework-docs-html"

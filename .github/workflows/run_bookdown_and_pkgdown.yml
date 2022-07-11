@@ -12,7 +12,7 @@ on:
       - '*'
 
   pull_request:
-  
+
   workflow_dispatch:
     inputs:
       pkgdown-build:
@@ -21,6 +21,10 @@ on:
         default: true
       bookdown-build:
         description: Build the developer manual
+        type: boolean
+        default: true
+      doxygen-build:
+        description: Build the Doxygen documentation
         type: boolean
         default: true
 
@@ -43,7 +47,6 @@ jobs:
       with:
         path: source
 
-
     - name: 2. Set up R
       uses: r-lib/actions/setup-r@v2
 
@@ -54,14 +57,20 @@ jobs:
         remotes::install_deps(dependencies = TRUE)
       shell: Rscript {0}
 
-    - name: Build Bookdown book
+    - name: 4. Build Bookdown book
       if: inputs.bookdown-build
       uses: ./source/.github/actions/render_bookdown_book
       with:
         repository-root: source
 
-    - name: Build pkgdown book
+    - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
+      uses: ./source/.github/actions/build_pkgdown_site
+      with:
+        package_root: source
+
+    - name: 6. Build Doxygen documentation
+      if: inputs.doxygen-build
       uses: ./source/.github/actions/build_pkgdown_site
       with:
         package_root: source
@@ -71,14 +80,30 @@ jobs:
     # Providing ssh-key to this checkout action gives us permission to
     # check in our changes later, in the Push step:
 
-    - name: 10. Check out master of the "publish-to" repository
+    - name: 7. Check out master of the "publish-to" repository
       uses: actions/checkout@v2
       with:
         repository: ${{ env.publish-to }}
         path: target
         ssh-key:  ${{ secrets.PRIVATE_SSH_KEY }}
 
-    - name: 11. Copy files into working copy of the target repository
+    - name: 8. Copy files into working copy of the target repository
+
+      env:
+
+        # The version directory names are hard-coded into the Make
+        # file and are determined by the Make target.  An exception to
+        # this is "doxygen_docs_modules_public_members_only", which is
+        # explicitly set as an output directory in the
+        # build_pkgdown_site action, overriding the default output
+        # directory for the Make file target "module-docs-html".  (The
+        # default output directory "doxygen_docs_modules" was already
+        # used as the output directory for a version of the module
+        # documentation that included documentation of private
+        # members, and we don't want to overwrite it.)
+
+        version_directories: "doxygen_docs_complete doxygen_docs_modules doxygen_docs_modules_public_members_only doxygen_docs_framework"
+
       run: |
         cd target
 
@@ -86,10 +111,20 @@ jobs:
         mkdir -p $VERSION
 
         # Copy the respective documentation into them:
-        rsync -a --delete --filter 'protect /$VERSION/bookdown_book' ../source/docs/ $VERSION || true
+        rsync -a --delete --filter 'protect /$VERSION/bookdown_book' \
+                          --filter 'protect /$VERSION/doxygen' \
+              ../source/docs/ $VERSION || true
         rsync -a --delete ../source/bookdown/_book/ $VERSION/bookdown_book || true
 
-    - name: 12. Commit updates and push to target (documentation) repository
+        mkdir -p $VERSION/doxygen
+        for dir in ${{ env.version_directories }}; do
+
+            # Copy the documentation for version $dir:
+            rsync -a --delete ../source/doxygen/$dir/html/ $VERSION/doxygen/$dir || true
+
+        done
+
+    - name: 9. Commit updates and push to target (documentation) repository
       run: |
         cd target
 

@@ -1,5 +1,5 @@
 name: 'Render Bookdown Book'
-description: ''
+description: 'Builds the Bookdown developer documentation, installing any needed prerequisites'
 inputs:
   repository-root:
     description: 'The root of the repository containing the bookdown source files'
