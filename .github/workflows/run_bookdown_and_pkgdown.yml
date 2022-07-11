@@ -71,7 +71,7 @@ jobs:
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
-      uses: ./source/.github/actions/build_pkgdown_site
+      uses: ./source/.github/actions/run_doxygen
       with:
         package_root: source
 
