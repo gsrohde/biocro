@@ -42,15 +42,25 @@ jobs:
 
     # Checks out this repository under $GITHUB_WORKSPACE/source:
 
+    - name: debug1
+      run: |
+        echo $GITHUB_WORKSPACE
+
     - name: 1. Check out master
       uses: actions/checkout@v2
       with:
         path: source
 
+    - name: debug2
+      run: |
+        echo $GITHUB_WORKSPACE
+
     - name: 2. Set up R
+      if: inputs.bookdown-build || inputs.pkgdown-build
       uses: r-lib/actions/setup-r@v2
 
     - name: 3. Install dependencies
+      if: inputs.bookdown-build || inputs.pkgdown-build
       run: |
         install.packages(c("remotes"))
         setwd('source')

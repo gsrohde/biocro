@@ -4,17 +4,27 @@ inputs:
   package_root:
     description: 'The root directory of the source tree of an R package'
     required: true
-  
+
+env:
+  PACKAGE_ROOT: ${{ inputs.package_root }}
+
 runs:
   using: "composite"
   steps:
+
+  - name: debug
+    run: |
+      echo $PACKAGE_ROOT
+      echo ${{ inputs.package_root }}
+      echo $GITHUB_WORKSPACE
+    shell: bash
 
   # The following four steps use the doxygen-actuib action defined in
   # this repository to build four different versions of the Doxygen
   # documentation:
 
   - name: Doxygen Action for default
-    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    uses: source/.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -24,7 +34,7 @@ runs:
       makefile-target: "all-html"
 
   - name: Doxygen Action for modules only
-    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    uses: source/.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -34,7 +44,7 @@ runs:
       makefile-target: "module-docs-html"
 
   - name: Doxygen Action for public members of modules only
-    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    uses: source/.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -48,7 +58,7 @@ runs:
       makefile-target: "module-docs-html"
 
   - name: Doxygen Action for framework
-    uses: ${{ inputs.package_root }}/.github/actions/doxygen-action
+    uses: source/.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
