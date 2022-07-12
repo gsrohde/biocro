@@ -61,17 +61,17 @@ jobs:
 
     - name: 3a. Install dependencies and pkgdown
       if: inputs.pkgdown-build
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: any::pkgdown, local::.
-          needs: website
-          working-directory: source
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        extra-packages: any::pkgdown, local::.
+        needs: website
+        working-directory: source
 
     - name: 3b. Install dependencies
       if: inputs.bookdown-build && !inputs.pkgdown-build
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          working-directory: source
+      uses: r-lib/actions/setup-r-dependencies@v2
+      with:
+        working-directory: source
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
