@@ -72,6 +72,18 @@ jobs:
       with:
         repository-root: $BIOCRO_ROOT
 
+    - name: (debug) Generate file list
+      if: ${{ always() }}
+      run: |
+        find . > file_list
+
+    - name: (debug) Upload artifact
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: File_list
+        path: file_list
+
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
       uses: ./$BIOCRO_ROOT/.github/actions/build_pkgdown_site
@@ -144,7 +156,6 @@ jobs:
         git push
 
     - name: (Tentative) Upload artifact containing documentation
-      if: ${{ always() }}
       uses: actions/upload-artifact@v2
       with:
         name: pkgdown-documentation

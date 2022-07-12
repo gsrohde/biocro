@@ -25,7 +25,7 @@ runs:
     - name: 9. Run bookdown
       run: |
         pwd
-        ls -a
+        ls -l
         cd ${{ inputs.repository-root }}/documentation/script
         ./run_bookdown.sh
       shell: bash
