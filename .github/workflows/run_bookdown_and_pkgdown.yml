@@ -29,8 +29,10 @@ on:
         default: true
 
 env:
-  publish-to: "gsrohde/biocro-documentation"
+  PUBLISH_TO: "gsrohde/biocro-documentation"
   VERSION: ${{ github.ref_name }}
+  BIOCRO_ROOT: source
+  BIOCRO_DOCUMENTATION_ROOT: target
 
 jobs:
   build:
@@ -40,20 +42,12 @@ jobs:
 
     steps:
 
-    # Checks out this repository under $GITHUB_WORKSPACE/source:
-
-    - name: debug1
-      run: |
-        echo $GITHUB_WORKSPACE
+    # Checks out this repository under $GITHUB_WORKSPACE/$BIOCRO_ROOT:
 
     - name: 1. Check out master
       uses: actions/checkout@v2
       with:
-        path: source
-
-    - name: debug2
-      run: |
-        echo $GITHUB_WORKSPACE
+        path: $BIOCRO_ROOT
 
     - name: 2. Set up R
       if: inputs.bookdown-build || inputs.pkgdown-build
@@ -64,43 +58,42 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         extra-packages: any::pkgdown, local::.
-        needs: website
-        working-directory: source
+        working-directory: $BIOCRO_ROOT
 
     - name: 3b. Install dependencies
       if: inputs.bookdown-build && !inputs.pkgdown-build
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        working-directory: source
+        working-directory: $BIOCRO_ROOT
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
-      uses: ./source/.github/actions/render_bookdown_book
+      uses: ./$BIOCRO_ROOT/.github/actions/render_bookdown_book
       with:
-        repository-root: source
+        repository-root: $BIOCRO_ROOT
 
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
-      uses: ./source/.github/actions/build_pkgdown_site
+      uses: ./$BIOCRO_ROOT/.github/actions/build_pkgdown_site
       with:
-        package_root: source
+        package_root: $BIOCRO_ROOT
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
-      uses: ./source/.github/actions/run_doxygen
+      uses: ./$BIOCRO_ROOT/.github/actions/run_doxygen
       with:
-        package_root: source
+        package_root: $BIOCRO_ROOT
 
-    # The "publish-to" repository is where the documentation will be
+    # The "PUBLISH_TO" repository is where the documentation will be
     # copied to and then checked in (to the default branch).
     # Providing ssh-key to this checkout action gives us permission to
     # check in our changes later, in the Push step:
 
-    - name: 7. Check out master of the "publish-to" repository
+    - name: 7. Check out master of the "PUBLISH_TO" repository
       uses: actions/checkout@v2
       with:
-        repository: ${{ env.publish-to }}
-        path: target
+        repository: ${{ env.PUBLISH_TO }}
+        path: $BIOCRO_DOCUMENTATION_ROOT
         ssh-key:  ${{ secrets.PRIVATE_SSH_KEY }}
 
     - name: 8. Copy files into working copy of the target repository
@@ -121,31 +114,37 @@ jobs:
         version_directories: "doxygen_docs_complete doxygen_docs_modules doxygen_docs_modules_public_members_only doxygen_docs_framework"
 
       run: |
-        cd target
+        cd $BIOCRO_DOCUMENTATION_ROOT
 
         # (Re)create target documentation directory:
         mkdir -p $VERSION
 
         # Copy the respective documentation into them:
-        rsync -a --delete --filter 'protect /$VERSION/bookdown_book' \
-                          --filter 'protect /$VERSION/doxygen' \
-              ../source/docs/ $VERSION || true
-        rsync -a --delete ../source/bookdown/_book/ $VERSION/bookdown_book || true
+        rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
+                          --filter "protect /$VERSION/doxygen" \
+              ../$BIOCRO_ROOT/docs/ $VERSION || true
+        rsync -a --delete ../$BIOCRO_ROOT/bookdown/_book/ $VERSION/bookdown_book || true
 
         mkdir -p $VERSION/doxygen
         for dir in ${{ env.version_directories }}; do
 
             # Copy the documentation for version $dir:
-            rsync -a --delete ../source/doxygen/$dir/html/ $VERSION/doxygen/$dir || true
+            rsync -a --delete ../$BIOCRO_ROOT/doxygen/$dir/html/ $VERSION/doxygen/$dir || true
 
         done
 
     - name: 9. Commit updates and push to target (documentation) repository
       run: |
-        cd target
+        cd $BIOCRO_DOCUMENTATION_ROOT
 
         # user.name is somewhat arbitrary but must be provided:
         git config user.name biocro-action
         git add .
         git commit -m "generated pgkdown and bookdown documentation"
         git push
+
+      - name: (Tentative) Upload artifact containing documentation
+      - uses: actions/upload-artifact@v2
+        with:
+          name: pkgdown-documentation
+          path: $BIOCRO_DOCUMENTATION_ROOT/$VERSION
