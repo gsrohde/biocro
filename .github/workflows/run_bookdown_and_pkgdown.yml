@@ -143,8 +143,8 @@ jobs:
         git commit -m "generated pgkdown and bookdown documentation"
         git push
 
-      - name: (Tentative) Upload artifact containing documentation
-      - uses: actions/upload-artifact@v2
-        with:
-          name: pkgdown-documentation
-          path: $BIOCRO_DOCUMENTATION_ROOT/$VERSION
+    - name: (Tentative) Upload artifact containing documentation
+      uses: actions/upload-artifact@v2
+      with:
+        name: pkgdown-documentation
+        path: $BIOCRO_DOCUMENTATION_ROOT/$VERSION
