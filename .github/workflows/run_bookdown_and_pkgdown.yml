@@ -68,7 +68,7 @@ jobs:
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
-      uses: ./source/.github/actions/render_bookdown_book
+      uses: ${{ format('./{0}/.github/actions/render_bookdown_book', ${{ env.BIOCRO_ROOT }}) }}
       with:
         repository-root: ${{ env.BIOCRO_ROOT }}
 
