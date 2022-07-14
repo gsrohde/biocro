@@ -92,7 +92,7 @@ jobs:
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
-      uses: ./${{ env.BIOCRO_ROOT }}/.github/actions/run_doxygen
+      uses: ./source/.github/actions/run_doxygen
       with:
         package_root: ${{ env.BIOCRO_ROOT }}
 
