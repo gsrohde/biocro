@@ -35,14 +35,15 @@ env:
   BIOCRO_DOCUMENTATION_ROOT: target
 
 jobs:
-  defaults:
-    run:
-      shell: bash
-      working-directory: scripts
   build:
     name: Generate pkgdown and bookdown documentation
 
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        shell: bash
+        working-directory: scripts
 
     steps:
 
