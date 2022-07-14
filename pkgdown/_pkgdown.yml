@@ -32,8 +32,8 @@ navbar:
       text: C++ Library
       menu:
       - text: Complete Doxygen Documentation
-        href: ../doxygen_docs_complete/index.html
+        href: doxygen/doxygen_docs_complete/index.html
       - text: Framework Documentation
-        href: ../doxygen_docs_framework/index.html
+        href: doxygen/doxygen_docs_framework/index.html
       - text: BioCro Module Documentation
-        href: ../doxygen_docs_modules/index.html
+        href: doxygen/doxygen_docs_modules/index.html
