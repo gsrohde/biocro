@@ -59,10 +59,10 @@ jobs:
       continue-on-error: true
       run: |
         pwd
-        echo '${{ env.GITHUB_WORKSPACE }}'
+        echo ${{ github.workspace }}'
         echo $GITHUB_WORKSPACE
         ls -la
-        ls -la '${{ env.GITHUB_WORKSPACE }}'
+        ls -la ${{ github.workspace }}'
         la -la $GITHUB_WORKSPACE
         find . > file_list
 
@@ -92,7 +92,7 @@ jobs:
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
-      uses: './.github/actions/render_bookdown_book'
+      uses: 'source/.github/actions/render_bookdown_book'
       with:
         repository-root: ${{ env.BIOCRO_ROOT }}
 
