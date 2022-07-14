@@ -54,8 +54,25 @@ jobs:
       with:
         path: ${{ env.BIOCRO_ROOT }}
 
+    - name: (debug) Generate file list
+      if: ${{ always() }}
+      continue-on-error: true
+      run: |
+        pwd
+        echo "${{ env.GITHUB_WORKSPACE }}"
+        ls -la
+        ls -la ${{ env.GITHUB_WORKSPACE }}
+        find . > file_list
+
+    - name: (debug) Upload artifact
+      if: ${{ always() }}
+      uses: actions/upload-artifact@v2
+      with:
+        name: File_list
+        path: file_list
+
     - name: 2. Set up R
-      if: inputs.bookdown-build || inputs.pkgdown-build
+      if: failure() || inputs.bookdown-build || inputs.pkgdown-build
       uses: r-lib/actions/setup-r@v2
 
     - name: 3a. Install dependencies and pkgdown
@@ -76,23 +93,6 @@ jobs:
       uses: './.github/actions/render_bookdown_book'
       with:
         repository-root: ${{ env.BIOCRO_ROOT }}
-
-    - name: (debug) Generate file list
-      if: ${{ always() }}
-      continue-on-error: true
-      run: |
-        pwd
-        echo ${{ env.GITHUB_WORKSPACE }}
-        ls -la
-        ls -la ${{ env.GITHUB_WORKSPACE }}
-        find . > file_list
-
-    - name: (debug) Upload artifact
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: File_list
-        path: file_list
 
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
