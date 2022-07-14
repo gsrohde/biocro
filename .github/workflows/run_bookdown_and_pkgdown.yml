@@ -35,7 +35,10 @@ env:
   BIOCRO_DOCUMENTATION_ROOT: target
 
 jobs:
-  working-directory: ${{ env.BIOCRO_ROOT }}
+  defaults:
+    run:
+      shell: bash
+      working-directory: scripts
   build:
     name: Generate pkgdown and bookdown documentation
 
