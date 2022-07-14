@@ -59,9 +59,11 @@ jobs:
       continue-on-error: true
       run: |
         pwd
-        echo "${{ env.GITHUB_WORKSPACE }}"
+        echo '${{ env.GITHUB_WORKSPACE }}'
+        echo $GITHUB_WORKSPACE
         ls -la
-        ls -la ${{ env.GITHUB_WORKSPACE }}
+        ls -la '${{ env.GITHUB_WORKSPACE }}'
+        la -la $GITHUB_WORKSPACE
         find . > file_list
 
     - name: (debug) Upload artifact
