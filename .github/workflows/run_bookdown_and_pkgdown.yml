@@ -47,7 +47,7 @@ jobs:
     - name: 1. Check out master
       uses: actions/checkout@v2
       with:
-        path: $BIOCRO_ROOT
+        path: ${{ env.BIOCRO_ROOT }}
 
     - name: 2. Set up R
       if: inputs.bookdown-build || inputs.pkgdown-build
@@ -58,19 +58,19 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         extra-packages: any::pkgdown, local::.
-        working-directory: $BIOCRO_ROOT
+        working-directory: ${{ env.BIOCRO_ROOT }}
 
     - name: 3b. Install dependencies
       if: inputs.bookdown-build && !inputs.pkgdown-build
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
-        working-directory: $BIOCRO_ROOT
+        working-directory: ${{ env.BIOCRO_ROOT }}
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
-      uses: ./$BIOCRO_ROOT/.github/actions/render_bookdown_book
+      uses: ./${{ env.BIOCRO_ROOT }}/.github/actions/render_bookdown_book
       with:
-        repository-root: $BIOCRO_ROOT
+        repository-root: ${{ env.BIOCRO_ROOT }}
 
     - name: (debug) Generate file list
       if: ${{ always() }}
@@ -86,15 +86,15 @@ jobs:
 
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
-      uses: ./$BIOCRO_ROOT/.github/actions/build_pkgdown_site
+      uses: ./${{ env.BIOCRO_ROOT }}/.github/actions/build_pkgdown_site
       with:
-        package_root: $BIOCRO_ROOT
+        package_root: ${{ env.BIOCRO_ROOT }}
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
-      uses: ./$BIOCRO_ROOT/.github/actions/run_doxygen
+      uses: ./${{ env.BIOCRO_ROOT }}/.github/actions/run_doxygen
       with:
-        package_root: $BIOCRO_ROOT
+        package_root: ${{ env.BIOCRO_ROOT }}
 
     # The "PUBLISH_TO" repository is where the documentation will be
     # copied to and then checked in (to the default branch).
@@ -105,7 +105,7 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: ${{ env.PUBLISH_TO }}
-        path: $BIOCRO_DOCUMENTATION_ROOT
+        path: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}
         ssh-key:  ${{ secrets.PRIVATE_SSH_KEY }}
 
     - name: 8. Copy files into working copy of the target repository
@@ -159,4 +159,4 @@ jobs:
       uses: actions/upload-artifact@v2
       with:
         name: pkgdown-documentation
-        path: $BIOCRO_DOCUMENTATION_ROOT/$VERSION
+        path: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }}
