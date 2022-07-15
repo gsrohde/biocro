@@ -31,8 +31,7 @@ on:
 env:
   PUBLISH_TO: "gsrohde/biocro-documentation"
   VERSION: ${{ github.ref_name }}
-  BIOCRO_ROOT: source
-  BIOCRO_DOCUMENTATION_ROOT: target
+  BIOCRO_DOCUMENTATION_ROOT: biocro_documentation_repository
 
 jobs:
   build:
@@ -40,29 +39,20 @@ jobs:
 
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        shell: bash
-        working-directory: ${{ env.BIOCRO_ROOT }}
-
     steps:
 
-    # Checks out this repository under $GITHUB_WORKSPACE/$BIOCRO_ROOT:
-
-    - name: 1. Check out master
+    - name: 1. Check out repository
       uses: actions/checkout@v2
-      with:
-        path: ${{ env.BIOCRO_ROOT }}
 
     - name: (debug) Generate file list
       if: ${{ always() }}
       continue-on-error: true
       run: |
         pwd
-        echo ${{ github.workspace }}'
+        echo ${{ github.workspace }}
         echo $GITHUB_WORKSPACE
         ls -la
-        ls -la ${{ github.workspace }}'
+        ls -la ${{ github.workspace }}
         la -la $GITHUB_WORKSPACE
         find . > file_list
 
@@ -82,31 +72,22 @@ jobs:
       uses: r-lib/actions/setup-r-dependencies@v2
       with:
         extra-packages: any::pkgdown, local::.
-        working-directory: ${{ env.BIOCRO_ROOT }}
 
     - name: 3b. Install dependencies
       if: inputs.bookdown-build && !inputs.pkgdown-build
       uses: r-lib/actions/setup-r-dependencies@v2
-      with:
-        working-directory: ${{ env.BIOCRO_ROOT }}
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
       uses: './source/.github/actions/render_bookdown_book'
-      with:
-        repository-root: ${{ env.BIOCRO_ROOT }}
 
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
       uses: ./source/.github/actions/build_pkgdown_site
-      with:
-        package_root: ${{ env.BIOCRO_ROOT }}
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
       uses: ./source/.github/actions/run_doxygen
-      with:
-        package_root: ${{ env.BIOCRO_ROOT }}
 
     # The "PUBLISH_TO" repository is where the documentation will be
     # copied to and then checked in (to the default branch).
@@ -137,29 +118,30 @@ jobs:
 
         version_directories: "doxygen_docs_complete doxygen_docs_modules doxygen_docs_modules_public_members_only doxygen_docs_framework"
 
-      run: |
-        cd ../$BIOCRO_DOCUMENTATION_ROOT
+      working-directory: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}
 
+      run: |
         # (Re)create target documentation directory:
         mkdir -p $VERSION
 
         # Copy the respective documentation into them:
         rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
                           --filter "protect /$VERSION/doxygen" \
-              ../$BIOCRO_ROOT/docs/ $VERSION || true
-        rsync -a --delete ../$BIOCRO_ROOT/bookdown/_book/ $VERSION/bookdown_book || true
+              ../docs/ $VERSION || true
+        rsync -a --delete ../bookdown/_book/ $VERSION/bookdown_book || true
 
         mkdir -p $VERSION/doxygen
         for dir in ${{ env.version_directories }}; do
 
             # Copy the documentation for version $dir:
-            rsync -a --delete ../$BIOCRO_ROOT/doxygen/$dir/html/ $VERSION/doxygen/$dir || true
+            rsync -a --delete ../doxygen/$dir/html/ $VERSION/doxygen/$dir || true
 
         done
 
     - name: 9. Commit updates and push to target (documentation) repository
+
+      working-directory: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}
       run: |
-        cd ../$BIOCRO_DOCUMENTATION_ROOT
 
         # user.name is somewhat arbitrary but must be provided:
         git config user.name biocro-action

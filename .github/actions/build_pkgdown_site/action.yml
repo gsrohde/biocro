@@ -3,7 +3,7 @@ description: 'Builds a pkgdown site from the source files of the package at pack
 inputs:
   package_root:
     description: 'The root directory of the source tree of an R package'
-    required: true
+    default: ${{ github.workspace }}
 runs:
   using: "composite"
   steps:

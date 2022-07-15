@@ -3,7 +3,7 @@ description: 'Builds the Bookdown developer documentation, installing any needed
 inputs:
   repository-root:
     description: 'The root of the repository containing the bookdown source files'
-    required: true
+    default: ${{ github.workspace }}
 runs:
   using: "composite"
   steps:
