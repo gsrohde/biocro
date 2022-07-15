@@ -20,7 +20,7 @@ runs:
   # documentation:
 
   - name: Doxygen Action for default
-    uses: ./source/.github/actions/doxygen-action
+    uses: ./.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -30,7 +30,7 @@ runs:
       makefile-target: "all-html"
 
   - name: Doxygen Action for modules only
-    uses: ./source/.github/actions/doxygen-action
+    uses: ./.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -40,7 +40,7 @@ runs:
       makefile-target: "module-docs-html"
 
   - name: Doxygen Action for public members of modules only
-    uses: ./source/.github/actions/doxygen-action
+    uses: ./.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
@@ -54,7 +54,7 @@ runs:
       makefile-target: "module-docs-html"
 
   - name: Doxygen Action for framework
-    uses: ./source/.github/actions/doxygen-action
+    uses: ./.github/actions/doxygen-action
     with:
       # Working directory
       working-directory: "${{ inputs.package_root }}/doxygen"
