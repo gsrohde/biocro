@@ -7,7 +7,7 @@ fi
 
 if [ ! -d "$1" ]; then
     echo "Path $1 could not be found!"
-    exit
+    #exit
 fi
 
 #debug:
@@ -15,7 +15,7 @@ pwd
 ls -al
 echo "$1"
 
-#cd "$1"
+cd "$1"
 
 
 make color=$2 extract_private=$3 generate_treeview=$4 $5 $6
