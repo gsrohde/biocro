@@ -2,8 +2,8 @@ name: Create All Doxygen Versions
 description: 'Generates four versions of the Doxygen documentation for BioCro package.'
 inputs:
   package_root:
-    description: 'The root directory of the source tree of an R package'
-    default: ${{ github.workspace }}
+    description: 'The root directory of the source tree of an R package relative to the GitHub workspace directory'
+    default: '.'
 
 runs:
   using: "composite"
