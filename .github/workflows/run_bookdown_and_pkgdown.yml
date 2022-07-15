@@ -96,7 +96,7 @@ jobs:
     # Providing ssh-key to this checkout action gives us permission to
     # check in our changes later, in the Push step:
 
-    - name: 7. Check out master of the "PUBLISH_TO" repository
+    - name: 7. Check out the target "PUBLISH_TO" repository
       uses: actions/checkout@v2
       with:
         repository: ${{ env.PUBLISH_TO }}
@@ -153,10 +153,10 @@ jobs:
 
     - name: Zip documentation
       run: |
-        tar -czf biocro-docs-from-$VERSION.tgz -C ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }} .
+        tar -czf biocro-docs-from-$VERSION.tgz -C $BIOCRO_DOCUMENTATION_ROOT/$VERSION .
 
     - name: (Tentative) Upload artifact containing documentation
       uses: actions/upload-artifact@v2
       with:
         name: pkgdown-documentation
-        path: biocro-docs-from-$VERSION.tgz
+        path: biocro-docs-from-${{ env.VERSION }}.tgz
