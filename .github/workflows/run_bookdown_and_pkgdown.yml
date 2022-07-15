@@ -79,15 +79,15 @@ jobs:
 
     - name: 4. Build Bookdown book
       if: inputs.bookdown-build
-      uses: './source/.github/actions/render_bookdown_book'
+      uses: './.github/actions/render_bookdown_book'
 
     - name: 5. Build pkgdown book
       if: inputs.pkgdown-build
-      uses: ./source/.github/actions/build_pkgdown_site
+      uses: ./.github/actions/build_pkgdown_site
 
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
-      uses: ./source/.github/actions/run_doxygen
+      uses: ./.github/actions/run_doxygen
 
     # The "PUBLISH_TO" repository is where the documentation will be
     # copied to and then checked in (to the default branch).
