@@ -13,6 +13,7 @@ runs:
     run: |
       echo ${{ inputs.package_root }}
       echo $GITHUB_WORKSPACE
+      ls -al
     shell: bash
 
   # The following four steps use the doxygen-actuib action defined in

@@ -9,6 +9,12 @@ if [ ! -d "$1" ]; then
     echo "Path $1 could not be found!"
     exit
 fi
+
+#debug:
+pwd
+ls -al
+echo "$1"
+
 cd "$1"
 
 
