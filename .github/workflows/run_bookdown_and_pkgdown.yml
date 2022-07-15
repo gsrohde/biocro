@@ -55,7 +55,7 @@ jobs:
         echo $GITHUB_WORKSPACE
         ls -la
         ls -la ${{ github.workspace }}
-        la -la $GITHUB_WORKSPACE
+        ls -la $GITHUB_WORKSPACE
         find . > file_list
 
     - name: (debug) Upload artifact
@@ -153,7 +153,7 @@ jobs:
 
     - name: Zip documentation
       run: |
-        tar -czf biocro-docs-from-$VERSION.tgz -C ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }}
+        tar -czf biocro-docs-from-$VERSION.tgz -C ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }} .
 
     - name: (Tentative) Upload artifact containing documentation
       uses: actions/upload-artifact@v2
