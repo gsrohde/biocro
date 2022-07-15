@@ -31,6 +31,8 @@ on:
 env:
   PUBLISH_TO: "gsrohde/biocro-documentation"
   VERSION: ${{ github.ref_name }}
+  # Relative path from the GitHub workspace directory to the directory
+  # where the documentation repository will be checked out:
   BIOCRO_DOCUMENTATION_ROOT: biocro_documentation_repository
 
 jobs:
@@ -149,8 +151,12 @@ jobs:
         git commit -m "generated pgkdown and bookdown documentation"
         git push
 
+    - name: Zip documentation
+      run: |
+        tar -czf biocro-docs-from-$VERSION.tgz -C ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }}
+
     - name: (Tentative) Upload artifact containing documentation
       uses: actions/upload-artifact@v2
       with:
         name: pkgdown-documentation
-        path: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}/${{ env.VERSION }}
+        path: biocro-docs-from-$VERSION.tgz
