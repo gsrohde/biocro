@@ -127,18 +127,29 @@ jobs:
         mkdir -p $VERSION
 
         # Copy the respective documentation into them:
-        rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
-                          --filter "protect /$VERSION/doxygen" \
-              ../docs/ $VERSION || true
-        rsync -a --delete ../bookdown/_book/ $VERSION/bookdown_book || true
 
-        mkdir -p $VERSION/doxygen
-        for dir in ${{ env.version_directories }}; do
+        if [[ ${{ inputs.pkgdown-build }} == 'true' ]]
+        then
+            rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
+                              --filter "protect /$VERSION/doxygen" \
+                  ../docs/ $VERSION || true
+        fi
 
-            # Copy the documentation for version $dir:
-            rsync -a --delete ../doxygen/$dir/html/ $VERSION/doxygen/$dir || true
+        if [[ ${{ inputs.bookdown-build }} == 'true' ]]
+        then
+            rsync -a --delete ../bookdown/_book/ $VERSION/bookdown_book || true
+        fi
 
-        done
+        if [[ ${{ inputs.pkgdown-build }} == 'true' ]]
+        then
+            mkdir -p $VERSION/doxygen
+            for dir in ${{ env.version_directories }}; do
+
+                # Copy the documentation for version $dir:
+                rsync -a --delete ../doxygen/$dir/html/ $VERSION/doxygen/$dir || true
+
+            done
+        fi
 
     - name: 9. Commit updates and push to target (documentation) repository
 
