@@ -43,53 +43,53 @@ jobs:
 
     steps:
 
-    - name: 1. Check out repository
-      uses: actions/checkout@v2
+    # - name: 1. Check out repository
+    #   uses: actions/checkout@v2
 
-    - name: (debug) Generate file list
-      if: ${{ always() }}
-      continue-on-error: true
-      run: |
-        pwd
-        echo ${{ github.workspace }}
-        echo $GITHUB_WORKSPACE
-        ls -la
-        ls -la ${{ github.workspace }}
-        ls -la $GITHUB_WORKSPACE
-        find . > file_list
+    # - name: (debug) Generate file list
+    #   if: ${{ always() }}
+    #   continue-on-error: true
+    #   run: |
+    #     pwd
+    #     echo ${{ github.workspace }}
+    #     echo $GITHUB_WORKSPACE
+    #     ls -la
+    #     ls -la ${{ github.workspace }}
+    #     ls -la $GITHUB_WORKSPACE
+    #     find . > file_list
 
-    - name: (debug) Upload artifact
-      if: ${{ always() }}
-      uses: actions/upload-artifact@v2
-      with:
-        name: File_list
-        path: file_list
+    # - name: (debug) Upload artifact
+    #   if: ${{ always() }}
+    #   uses: actions/upload-artifact@v2
+    #   with:
+    #     name: File_list
+    #     path: file_list
 
-    - name: 2. Set up R
-      if: failure() || inputs.bookdown-build || inputs.pkgdown-build
-      uses: r-lib/actions/setup-r@v2
+    # - name: 2. Set up R
+    #   if: failure() || inputs.bookdown-build || inputs.pkgdown-build
+    #   uses: r-lib/actions/setup-r@v2
 
-    - name: 3a. Install dependencies and pkgdown
-      if: inputs.pkgdown-build
-      uses: r-lib/actions/setup-r-dependencies@v2
-      with:
-        extra-packages: any::pkgdown, local::.
+    # - name: 3a. Install dependencies and pkgdown
+    #   if: inputs.pkgdown-build
+    #   uses: r-lib/actions/setup-r-dependencies@v2
+    #   with:
+    #     extra-packages: any::pkgdown, local::.
 
-    - name: 3b. Install dependencies
-      if: inputs.bookdown-build && !inputs.pkgdown-build
-      uses: r-lib/actions/setup-r-dependencies@v2
+    # - name: 3b. Install dependencies
+    #   if: inputs.bookdown-build && !inputs.pkgdown-build
+    #   uses: r-lib/actions/setup-r-dependencies@v2
 
-    - name: 4. Build Bookdown book
-      if: inputs.bookdown-build
-      uses: './.github/actions/render_bookdown_book'
+    # - name: 4. Build Bookdown book
+    #   if: inputs.bookdown-build
+    #   uses: './.github/actions/render_bookdown_book'
 
-    - name: 5. Build pkgdown book
-      if: inputs.pkgdown-build
-      uses: ./.github/actions/build_pkgdown_site
+    # - name: 5. Build pkgdown book
+    #   if: inputs.pkgdown-build
+    #   uses: ./.github/actions/build_pkgdown_site
 
-    - name: 6. Build Doxygen documentation
-      if: inputs.doxygen-build
-      uses: ./.github/actions/run_doxygen
+    # - name: 6. Build Doxygen documentation
+    #   if: inputs.doxygen-build
+    #   uses: ./.github/actions/run_doxygen
 
     # The "PUBLISH_TO" repository is where the documentation will be
     # copied to and then checked in (to the default branch).
@@ -102,6 +102,11 @@ jobs:
         repository: ${{ env.PUBLISH_TO }}
         path: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}
         ssh-key:  ${{ secrets.PRIVATE_SSH_KEY }}
+
+     -name: Add file
+      run: |
+        mkdir -p docs
+        cat "HELLO" > docs/index.html
 
     - name: 8. Copy files into working copy of the target repository
 
@@ -130,6 +135,9 @@ jobs:
 
         if [[ ${{ inputs.pkgdown-build }} == 'true' ]]
         then
+            echo "copying pkgdown files"
+            pwd
+            ls -la ..
             rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
                               --filter "protect /$VERSION/doxygen" \
                   ../docs/ $VERSION || true
@@ -137,11 +145,17 @@ jobs:
 
         if [[ ${{ inputs.bookdown-build }} == 'true' ]]
         then
+            echo "copying bookdown files"
+            pwd
+            ls -la ..
             rsync -a --delete ../bookdown/_book/ $VERSION/bookdown_book || true
         fi
 
-        if [[ ${{ inputs.pkgdown-build }} == 'true' ]]
+        if [[ ${{ inputs.doxygen-build }} == 'true' ]]
         then
+            echo "copying doxygen files"
+            pwd
+            ls -la ..
             mkdir -p $VERSION/doxygen
             for dir in ${{ env.version_directories }}; do
 
