@@ -136,7 +136,7 @@ jobs:
             ls -la ../docs
             rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
                               --filter "protect /$VERSION/doxygen" \
-                  ../docs/ $VERSION || true
+                  -v -v ../docs/ $VERSION || true
         fi
 
         if [[ ${{ inputs.bookdown-build }} == 'true' ]]
