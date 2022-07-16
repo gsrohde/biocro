@@ -134,8 +134,8 @@ jobs:
             pwd
             ls -la ..
             ls -la ../docs
-            rsync -a --delete --filter "protect /$VERSION/bookdown_book" \
-                              --filter "protect /$VERSION/doxygen" \
+            rsync -a --delete --filter "protect /bookdown_book" \
+                              --filter "protect /doxygen" \
                   -v -v ../docs/ $VERSION || true
         fi
 
