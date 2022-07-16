@@ -103,7 +103,7 @@ jobs:
         path: ${{ env.BIOCRO_DOCUMENTATION_ROOT }}
         ssh-key:  ${{ secrets.PRIVATE_SSH_KEY }}
 
-     -name: Add file
+    - name: Add file
       run: |
         mkdir -p docs
         cat "HELLO" > docs/index.html
