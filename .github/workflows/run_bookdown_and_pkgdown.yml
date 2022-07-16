@@ -106,7 +106,7 @@ jobs:
     - name: Add file
       run: |
         mkdir -p docs
-        cat "HELLO" > docs/index.html
+        echo "HELLO" > docs/index.html
 
     - name: 8. Copy files into working copy of the target repository
 
