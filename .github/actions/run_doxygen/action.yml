@@ -18,8 +18,15 @@ env:
 
 runs:
   using: "composite"
-
   steps:
+
+  - name: debug
+    run: |
+      echo ${{ env.package_root }}
+      echo "${{ env.package_root }}/doxygen"
+      echo $GITHUB_WORKSPACE
+      ls -al
+    shell: bash
 
   # These four steps use the doxygen-action action defined in this
   # repository to build four different versions of the Doxygen
