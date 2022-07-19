@@ -14,7 +14,7 @@ runs:
       continue-on-error: true
 
     - name: Install Pandoc
-      if: always() && steps.pandoc-test.outcome == 'failure'
+      if: steps.pandoc-test.outcome == 'failure'
       uses: r-lib/actions/setup-pandoc@v2
 
     - name: 8. Install bookdown
