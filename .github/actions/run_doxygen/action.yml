@@ -1,23 +1,25 @@
 name: Create All Doxygen Versions
 description: 'Generates four versions of the Doxygen documentation for BioCro package.'
 
-env:
-
-  # This variable represents the path of the root directory of the
-  # source tree of an R package relative to the GitHub workspace
-  # directory.  Unlike in the case of the "render_bookdown_book" and
-  # "build_pkgdown_site" actions, this value is not an action input
-  # but rather has a fixed value.  This is because the
-  # "uses: ./.github/actions/doxygen-action" settings assume that the
-  # package root is identical to the GitHub workspace directory.  (The
-  # "uses" value can not, as of this writing, be set using a context
-  # expression such as
-  # "${{ inputs.package_root }}/.github/actions/doxygen-action".)
-
-  package_root: '.'
-
 runs:
   using: "composite"
+
+
+  env:
+
+    # This variable represents the path of the root directory of the
+    # source tree of an R package relative to the GitHub workspace
+    # directory.  Unlike in the case of the "render_bookdown_book" and
+    # "build_pkgdown_site" actions, this value is not an action input
+    # but rather has a fixed value.  This is because the
+    # "uses: ./.github/actions/doxygen-action" settings assume that the
+    # package root is identical to the GitHub workspace directory.  (The
+    # "uses" value can not, as of this writing, be set using a context
+    # expression such as
+    # "${{ inputs.package_root }}/.github/actions/doxygen-action".)
+
+    package_root: '.'
+
   steps:
 
   - name: debug
