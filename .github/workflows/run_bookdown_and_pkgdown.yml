@@ -71,6 +71,8 @@ jobs:
     - name: 6. Build Doxygen documentation
       if: inputs.doxygen-build
       uses: ./.github/actions/run_doxygen
+      with:
+        package_root: 'blah'
 
     # The "PUBLISH_TO" repository is where the documentation will be
     # pushed to (on the default branch).  Providing ssh-key to this
