@@ -11,6 +11,7 @@ runs:
   steps:
 
   - name: Maybe abort
+    shell: bash
     run: |
       if [[ ${{ inputs.package_root }} != "." ]]
       then
