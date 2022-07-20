@@ -15,7 +15,7 @@ runs:
     run: |
       if [[ ${{ inputs.package_root }} != "." ]]
       then
-        echo "package_root must be set to '.'"
+        echo "Input \"package_root\" must be set to '.'!"
         exit 1
       fi
 
