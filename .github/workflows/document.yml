@@ -29,7 +29,7 @@ on:
 
 env:
   # The documentation repository:
-  PUBLISH_TO: "gsrohde/biocro-documentation"
+  PUBLISH_TO: "gsrohde/eraseme"
   # Relative path from the GitHub workspace directory to the directory
   # where the documentation repository will be checked out:
   BIOCRO_DOCUMENTATION_ROOT: biocro_documentation_repository
