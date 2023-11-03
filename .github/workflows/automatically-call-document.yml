@@ -13,6 +13,7 @@ on:
   # the BioCro documentation repository:
   pull_request:
 
+  workflow_dispatch:
 
 jobs:
 
